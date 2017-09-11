@@ -110,7 +110,7 @@ public class EngageSeller implements java.io.Serializable {
 	private String sellerIconURL;
 	@Column(name = "ECOM_PAYMENT")
 	private Integer ecomPayment;
-	@Formula("(SELECT avg(R.rating)  FROM {h-schema}entity_rating R where R.entity_id= seller_id and  R.entity_type='S')")
+	@Formula("(SELECT avg(R.rating)  FROM llcdb.entity_rating R where R.entity_id= seller_id and  R.entity_type='S')")
 	private Float rating = 0f;
 
 	
