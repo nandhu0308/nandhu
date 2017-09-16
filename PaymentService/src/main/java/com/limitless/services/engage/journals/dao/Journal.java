@@ -33,7 +33,7 @@ public class Journal {
 	@Column(name="MOBILE")
 	private String journalMobile;
 	@Column(name="IS_ACTIVE", nullable=false, columnDefinition="TINYINT(1)")
-	private boolean journalIsActive;
+	private boolean isActive;
 	@Column(name="IS_DELETED", nullable=false, columnDefinition="TINYINT(1)")
 	private boolean journalIsDeleted;
 	@Column(name="CREATED_BY")
@@ -95,11 +95,12 @@ public class Journal {
 	public void setJournalMobile(String journalMobile) {
 		this.journalMobile = journalMobile;
 	}
-	public boolean isJournalIsActive() {
-		return journalIsActive;
+	
+	public boolean isActive() {
+		return isActive;
 	}
-	public void setJournalIsActive(boolean journalIsActive) {
-		this.journalIsActive = journalIsActive;
+	public void setActive(boolean isActive) {
+		this.isActive = isActive;
 	}
 	public boolean isJournalIsDeleted() {
 		return journalIsDeleted;

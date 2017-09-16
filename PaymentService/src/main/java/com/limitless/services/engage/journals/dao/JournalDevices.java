@@ -23,7 +23,7 @@ public class JournalDevices {
 	@Column(name="MAC_ID")
 	private String journalDeviceMacId;
 	@Column(name="IS_ACTIVE", nullable=false, columnDefinition="TINYINT(1)")
-	private boolean journalDeviceIsActive;
+	private boolean isActive;
 	@Column(name="CREATED_BY")
 	private String createdBy;
 	@Column(name="UPDATED_BY")
@@ -53,11 +53,12 @@ public class JournalDevices {
 	public void setJournalDeviceMacId(String journalDeviceMacId) {
 		this.journalDeviceMacId = journalDeviceMacId;
 	}
-	public boolean isJournalDeviceIsActive() {
-		return journalDeviceIsActive;
+
+	public boolean isActive() {
+		return isActive;
 	}
-	public void setJournalDeviceIsActive(boolean journalDeviceIsActive) {
-		this.journalDeviceIsActive = journalDeviceIsActive;
+	public void setActive(boolean isActive) {
+		this.isActive = isActive;
 	}
 	public String getCreatedBy() {
 		return createdBy;

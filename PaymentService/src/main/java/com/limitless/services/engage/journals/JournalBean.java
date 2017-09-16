@@ -1,90 +1,90 @@
 package com.limitless.services.engage.journals;
 
 public class JournalBean {
-	private int journalId;
-	private int journalChannelId;
-	private String journalEmail;
-	private String journalPassword;
-	private String journalEmpId;
-	private String journalFirstName;
-	private String journalLastName;
-	private String journalMobile;
-	private boolean journalIsActive;
-	private boolean journalIsDeleted;
-	private String journalCreatedBy;
-	private String journalUpdatedBy;
+	private int  journalId, channelId;
+	private String email, password, empId, fName, lName, mobile;
+	private boolean isActive, isDeleted;
+
+	
 	public int getJournalId() {
 		return journalId;
 	}
+
 	public void setJournalId(int journalId) {
 		this.journalId = journalId;
 	}
-	public int getJournalChannelId() {
-		return journalChannelId;
+
+	public int getChannelId() {
+		return channelId;
 	}
-	public void setJournalChannelId(int journalChannelId) {
-		this.journalChannelId = journalChannelId;
+
+	public void setChannelId(int channelId) {
+		this.channelId = channelId;
 	}
-	public String getJournalEmail() {
-		return journalEmail;
+
+	public boolean isActive() {
+		return isActive;
 	}
-	public void setJournalEmail(String journalEmail) {
-		this.journalEmail = journalEmail;
+
+	public void setActive(boolean isActive) {
+		this.isActive = isActive;
 	}
-	public String getJournalPassword() {
-		return journalPassword;
+
+	public boolean isDeleted() {
+		return isDeleted;
 	}
-	public void setJournalPassword(String journalPassword) {
-		this.journalPassword = journalPassword;
+
+	public void setDeleted(boolean isDeleted) {
+		this.isDeleted = isDeleted;
 	}
-	public String getJournalEmpId() {
-		return journalEmpId;
+
+
+	public String getEmail() {
+		return email;
 	}
-	public void setJournalEmpId(String journalEmpId) {
-		this.journalEmpId = journalEmpId;
+
+	public void setEmail(String email) {
+		this.email = email;
 	}
-	public String getJournalFirstName() {
-		return journalFirstName;
+
+	public String getPassword() {
+		return password;
 	}
-	public void setJournalFirstName(String journalFirstName) {
-		this.journalFirstName = journalFirstName;
+
+	public void setPassword(String password) {
+		this.password = password;
 	}
-	public String getJournalLastName() {
-		return journalLastName;
+
+	public String getEmpId() {
+		return empId;
 	}
-	public void setJournalLastName(String journalLastName) {
-		this.journalLastName = journalLastName;
+
+	public void setEmpId(String empId) {
+		this.empId = empId;
 	}
-	public String getJournalMobile() {
-		return journalMobile;
+
+	public String getfName() {
+		return fName;
 	}
-	public void setJournalMobile(String journalMobile) {
-		this.journalMobile = journalMobile;
+
+	public void setfName(String fName) {
+		this.fName = fName;
 	}
-	
-	public boolean isJournalIsActive() {
-		return journalIsActive;
+
+	public String getlName() {
+		return lName;
 	}
-	public void setJournalIsActive(boolean journalIsActive) {
-		this.journalIsActive = journalIsActive;
+
+	public void setlName(String lName) {
+		this.lName = lName;
 	}
-	public boolean isJournalIsDeleted() {
-		return journalIsDeleted;
+
+	public String getMobile() {
+		return mobile;
 	}
-	public void setJournalIsDeleted(boolean journalIsDeleted) {
-		this.journalIsDeleted = journalIsDeleted;
+
+	public void setMobile(String mobile) {
+		this.mobile = mobile;
 	}
-	public String getJournalCreatedBy() {
-		return journalCreatedBy;
-	}
-	public void setJournalCreatedBy(String journalCreatedBy) {
-		this.journalCreatedBy = journalCreatedBy;
-	}
-	public String getJournalUpdatedBy() {
-		return journalUpdatedBy;
-	}
-	public void setJournalUpdatedBy(String journalUpdatedBy) {
-		this.journalUpdatedBy = journalUpdatedBy;
-	}
-	
+
 }
