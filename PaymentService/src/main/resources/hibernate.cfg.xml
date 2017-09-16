@@ -6,7 +6,7 @@
   <property name="hibernate.connection.driver_class">com.mysql.jdbc.Driver</property>
   <property name="hibernate.connection.password">pmt11cd3</property>
   <property name="hibernate.connection.url">jdbc:mysql://139.59.15.249:3306?autoReconnect=true</property>
-  <property name="hibernate.default_schema">llcdb</property>
+  <property name="hibernate.default_schema">llcdbstagging</property>
   <property name="hibernate.connection.username">root</property>
   <property name="hibernate.dialect">org.hibernate.dialect.MySQLDialect</property>
   <property name="hibernate.show_sql">true</property>
@@ -83,5 +83,8 @@
   <mapping class="com.limitless.services.socialentity.dao.EntityShare"/>
   <mapping class="com.limitless.services.socialentity.dao.EntityViewers"/>
   <mapping class="com.limitless.services.socialentity.dao.EntityRating"/>
+  <mapping class="com.limitless.services.engage.journals.dao.Journal"/>
+  <mapping class="com.limitless.services.engage.journals.dao.JournalDevices"/>
+  <mapping class="com.limitless.services.engage.journals.dao.JournalSetting"/>
  </session-factory>
 </hibernate-configuration>
