@@ -1,6 +1,7 @@
 package com.limitless.services.engage.journals.dao;
 
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
@@ -12,7 +13,9 @@ import org.hibernate.Transaction;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.LogicalExpression;
 import org.hibernate.criterion.Restrictions;
+import org.json.JSONObject;
 
+import com.limitless.services.engage.dao.SessionKeys;
 import com.limitless.services.engage.journals.JournalBean;
 
 import com.limitless.services.engage.journals.JournalLoginRequestBean;
@@ -70,7 +73,7 @@ public class JournalManager {
 	}
 
 	public JournalLoginResponseBean journalLogin(JournalLoginRequestBean requestBean) {
-		JournalLoginResponseBean responseBean = new JournalLoginResponseBean();		
+		JournalLoginResponseBean responseBean = new JournalLoginResponseBean();
 		JournalSettingBean settingBean = new JournalSettingBean();
 		Session session = null;
 		Transaction transaction = null;
@@ -93,11 +96,29 @@ public class JournalManager {
 					journalBean.setJournalId(journal.getJournalId());
 					journalBean.setChannelId(journal.getJournalChannelId());
 					journalBean.setEmail(journal.getJournalEmail());
-					journalBean.setfName (journal.getJournalFirstName());
+					journalBean.setfName(journal.getJournalFirstName());
 					journalBean.setlName(journal.getJournalLastName());
 					journalBean.setMobile(journal.getJournalMobile());
-					journalBean.setEmpId(journal.getJournalEmpId());					
-					responseBean.setJournal(journalBean);
+					journalBean.setEmpId(journal.getJournalEmpId());
+					responseBean.setJournal(journalBean);					
+					JSONObject sessionKeyJson = new JSONObject();
+					sessionKeyJson.put("role", "journal");
+					sessionKeyJson.put("key", journal.getJournalId());
+					sessionKeyJson.put("value", requestBean.getJournalPassword());
+					SessionKeys sessionKeys = new SessionKeys();
+					sessionKeys.setUserId(journal.getJournalId());
+					sessionKeys.setSessionKey(sessionKeyJson.toString());
+					sessionKeys.setKeyAlive(1);
+
+					session.persist(sessionKeys);
+
+					int sesssionKeyId = sessionKeys.getSessionId();
+
+					String sessionKeyString = sesssionKeyId + "." + sessionKeyJson.toString();
+					String sessionKeyB64 = Base64.getEncoder().encodeToString(sessionKeyString.getBytes());
+					log.debug("Session Key : " + sessionKeyB64);
+					responseBean.setAuthKey(sessionKeyB64);				
+
 					Criteria deviceCriteria = session.createCriteria(JournalDevices.class);
 					Criterion jidCriterion = Restrictions.eq("journalId", journal.getJournalId());
 					Criterion macCriterion = Restrictions.eq("journalDeviceMacId", requestBean.getJournalDeviceMacId());
@@ -128,7 +149,7 @@ public class JournalManager {
 								settingBean.setStreamName(setting.getStreamName());
 								settingBean.setRecord(setting.isRecord());
 								settingBean.setUpload(setting.isUpload());
-								
+
 								responseBean.setJournalSetting(settingBean);
 							}
 						}
@@ -148,6 +169,45 @@ public class JournalManager {
 			}
 		}
 		return responseBean;
+	}
+
+	
+	
+	public boolean authenticateJournal(String sessionKey, int sessionId) {
+		log.debug("authenticating journal");
+		boolean isJournalAuthorized = false;
+		Session session = null;
+		Transaction transaction = null;
+		try {
+			session = sessionFactory.getCurrentSession();
+			transaction = session.beginTransaction();
+
+			JSONObject sessionJson = new JSONObject(sessionKey);
+			int id = sessionJson.getInt("key");
+
+			SessionKeys sessionKeys = (SessionKeys) session.get("com.limitless.services.engage.dao.SessionKeys",
+					sessionId);
+			if (sessionKeys != null) {
+				if (sessionKeys.getKeyAlive() == 1 && sessionKeys.getUserId() == id) {
+					isJournalAuthorized = true;
+				} else {
+					isJournalAuthorized = false;
+				}
+			} else {
+				isJournalAuthorized = false;
+			}
+			transaction.commit();
+		} catch (Exception e) {
+			if (transaction != null) {
+				transaction.rollback();
+			}
+			log.error("authenticating journal failed :" + e);
+		} finally {
+			if (session != null && session.isOpen()) {
+				session.close();
+			}
+		}
+		return isJournalAuthorized;
 	}
 
 }

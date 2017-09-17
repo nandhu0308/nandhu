@@ -9,6 +9,7 @@ import org.json.JSONObject;
 
 import com.limitless.services.engage.dao.EngageCustomerManager;
 import com.limitless.services.engage.dao.EngageSellerManager;
+import com.limitless.services.engage.journals.dao.JournalManager;
 
 public class AuthenticationUtil {
 	
@@ -88,6 +89,10 @@ public class AuthenticationUtil {
 		else if(role.equals("merchant")){
 			EngageSellerManager manager = new EngageSellerManager();
 			isUserAuthenticated = manager.authenticateMerchant(sessionToken, sessionId);
+		}
+		else if(role.equals("journal")){
+			JournalManager manager = new JournalManager();
+			isUserAuthenticated = manager.authenticateJournal(sessionToken, sessionId);
 		}
 		
 		return isUserAuthenticated;
