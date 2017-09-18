@@ -7,7 +7,7 @@ public class JournalLoginResponseBean {
 	private JournalBean journal;
 	private JournalSettingBean journalSetting;
 	private String authKey;
-
+	
 	public String getAuthKey() {
 		return authKey;
 	}

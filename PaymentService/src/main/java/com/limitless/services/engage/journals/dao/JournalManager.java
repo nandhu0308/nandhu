@@ -100,25 +100,6 @@ public class JournalManager {
 					journalBean.setlName(journal.getJournalLastName());
 					journalBean.setMobile(journal.getJournalMobile());
 					journalBean.setEmpId(journal.getJournalEmpId());
-					responseBean.setJournal(journalBean);					
-					JSONObject sessionKeyJson = new JSONObject();
-					sessionKeyJson.put("role", "journal");
-					sessionKeyJson.put("key", journal.getJournalId());
-					sessionKeyJson.put("value", requestBean.getJournalPassword());
-					SessionKeys sessionKeys = new SessionKeys();
-					sessionKeys.setUserId(journal.getJournalId());
-					sessionKeys.setSessionKey(sessionKeyJson.toString());
-					sessionKeys.setKeyAlive(1);
-
-					session.persist(sessionKeys);
-
-					int sesssionKeyId = sessionKeys.getSessionId();
-
-					String sessionKeyString = sesssionKeyId + "." + sessionKeyJson.toString();
-					String sessionKeyB64 = Base64.getEncoder().encodeToString(sessionKeyString.getBytes());
-					log.debug("Session Key : " + sessionKeyB64);
-					responseBean.setAuthKey(sessionKeyB64);				
-
 					Criteria deviceCriteria = session.createCriteria(JournalDevices.class);
 					Criterion jidCriterion = Restrictions.eq("journalId", journal.getJournalId());
 					Criterion macCriterion = Restrictions.eq("journalDeviceMacId", requestBean.getJournalDeviceMacId());
@@ -135,6 +116,23 @@ public class JournalManager {
 						List<JournalSetting> settingList = settingsCriteria.list();
 						log.debug("setting list size : " + settingList.size());
 						if (settingList.size() > 0) {
+							responseBean.setJournal(journalBean);					
+							JSONObject sessionKeyJson = new JSONObject();
+							sessionKeyJson.put("role", "journal");
+							sessionKeyJson.put("key", journal.getJournalId());
+							sessionKeyJson.put("value", requestBean.getJournalPassword());
+							SessionKeys sessionKeys = new SessionKeys();
+							sessionKeys.setUserId(journal.getJournalId());
+							sessionKeys.setSessionKey(sessionKeyJson.toString());
+							sessionKeys.setKeyAlive(1);
+							session.persist(sessionKeys);
+							int sesssionKeyId = sessionKeys.getSessionId();
+							String sessionKeyString = sesssionKeyId + "." + sessionKeyJson.toString();
+							String sessionKeyB64 = Base64.getEncoder().encodeToString(sessionKeyString.getBytes());
+							log.debug("Session Key : " + sessionKeyB64);
+							responseBean.setAuthKey(sessionKeyB64);		
+
+
 							for (JournalSetting setting : settingList) {
 								settingBean.setId(setting.getJournalSettingId());
 								settingBean.setJournalId(setting.getJournalId());
@@ -171,8 +169,6 @@ public class JournalManager {
 		return responseBean;
 	}
 
-	
-	
 	public boolean authenticateJournal(String sessionKey, int sessionId) {
 		log.debug("authenticating journal");
 		boolean isJournalAuthorized = false;
