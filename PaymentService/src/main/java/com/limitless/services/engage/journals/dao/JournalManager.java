@@ -116,7 +116,7 @@ public class JournalManager {
 						List<JournalSetting> settingList = settingsCriteria.list();
 						log.debug("setting list size : " + settingList.size());
 						if (settingList.size() > 0) {
-							responseBean.setJournal(journalBean);					
+							responseBean.setJournal(journalBean);
 							JSONObject sessionKeyJson = new JSONObject();
 							sessionKeyJson.put("role", "journal");
 							sessionKeyJson.put("key", journal.getJournalId());
@@ -130,8 +130,7 @@ public class JournalManager {
 							String sessionKeyString = sesssionKeyId + "." + sessionKeyJson.toString();
 							String sessionKeyB64 = Base64.getEncoder().encodeToString(sessionKeyString.getBytes());
 							log.debug("Session Key : " + sessionKeyB64);
-							responseBean.setAuthKey(sessionKeyB64);		
-
+							responseBean.setAuthKey(sessionKeyB64);
 
 							for (JournalSetting setting : settingList) {
 								settingBean.setId(setting.getJournalSettingId());
@@ -147,7 +146,8 @@ public class JournalManager {
 								settingBean.setStreamName(setting.getStreamName());
 								settingBean.setRecord(setting.isRecord());
 								settingBean.setUpload(setting.isUpload());
-
+								settingBean.setRecordUserName(setting.getRecord_user_name());
+								settingBean.setRecordPassword(setting.getRecord_password());
 								responseBean.setJournalSetting(settingBean);
 							}
 						}

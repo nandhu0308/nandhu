@@ -41,7 +41,11 @@ public class JournalSetting {
 	@Column(name="OUTPUT_URL_RTSP")
 	private String outputUrlRtsp;
 	@Column(name="IS_RECORD", nullable=false, columnDefinition="TINYINT(1)")
-	private boolean isRecord;
+	private boolean isRecord;	
+	@Column(name="record_user_name")
+	private String record_user_name;
+	@Column(name="record_password")
+	private String record_password;
 	@Column(name="IS_UPLOAD", nullable=false, columnDefinition="TINYINT(1)")
 	private boolean isUpload;
 	@Column(name="IS_ACTIVE", nullable=false, columnDefinition="TINYINT(1)")
@@ -56,6 +60,21 @@ public class JournalSetting {
 	@Temporal(TemporalType.TIMESTAMP)
 	@Version
 	private Date updatedTime;
+	
+	
+	
+	public String getRecord_user_name() {
+		return record_user_name;
+	}
+	public void setRecord_user_name(String record_user_name) {
+		this.record_user_name = record_user_name;
+	}
+	public String getRecord_password() {
+		return record_password;
+	}
+	public void setRecord_password(String record_password) {
+		this.record_password = record_password;
+	}
 	public Integer getJournalSettingId() {
 		return journalSettingId;
 	}

@@ -4,9 +4,22 @@ public class JournalSettingBean {
 	
 	private int id,journalId, languageId;
 	private String applnName, hostUrl, hostPort, streamName, suName, spwd, outputUrlHls,
-			outputUrlRtsp;
+			outputUrlRtsp, recordUserName,recordPassword;
 	private boolean isRecord, isUpload;
 	
+	
+	public String getRecordUserName() {
+		return recordUserName;
+	}
+	public void setRecordUserName(String recordUserName) {
+		this.recordUserName = recordUserName;
+	}
+	public String getRecordPassword() {
+		return recordPassword;
+	}
+	public void setRecordPassword(String recordPassword) {
+		this.recordPassword = recordPassword;
+	}
 	public int getId() {
 		return id;
 	}
