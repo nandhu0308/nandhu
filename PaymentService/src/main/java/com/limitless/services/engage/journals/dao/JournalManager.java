@@ -169,6 +169,33 @@ public class JournalManager {
 		return responseBean;
 	}
 
+	public boolean isJournalActive(int journalId) {
+
+		boolean isJournalActive = false;
+		Session session = null;
+		Transaction transaction = null;
+		try {
+			session = sessionFactory.getCurrentSession();
+			transaction = session.beginTransaction();
+			Criteria journalCriteria = session.createCriteria(Journal.class);
+			journalCriteria.add(Restrictions.eq("id", journalId));
+			journalCriteria.add(Restrictions.eq("isActive", true));
+			List<Journal> journalList = journalCriteria.list();
+			isJournalActive = journalList != null && journalList.size() > 0;
+
+		} catch (Exception e) {
+			if (transaction != null) {
+				transaction.rollback();
+			}
+			log.error("authenticating journal failed :" + e);
+		} finally {
+			if (session != null && session.isOpen()) {
+				session.close();
+			}
+		}
+		return isJournalActive;
+	}
+
 	public boolean authenticateJournal(String sessionKey, int sessionId) {
 		log.debug("authenticating journal");
 		boolean isJournalAuthorized = false;
