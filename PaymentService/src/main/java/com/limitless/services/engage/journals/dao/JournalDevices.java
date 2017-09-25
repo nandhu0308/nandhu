@@ -6,6 +6,8 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.OneToOne;
+import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -20,6 +22,8 @@ public class JournalDevices {
 	private Integer journalDeviceId;
 	@Column(name="JOURNAL_ID")
 	private Integer journalId;
+	@Column(name="JOURNAL_SETTING_ID")
+	private Integer journalSettingId;
 	@Column(name="MAC_ID")
 	private String journalDeviceMacId;
 	@Column(name="IS_ACTIVE", nullable=false, columnDefinition="TINYINT(1)")
@@ -35,6 +39,23 @@ public class JournalDevices {
 	@Version
 	private Date updatedTime;
 	
+	@OneToOne
+	@PrimaryKeyJoinColumn
+	private JournalSetting deviceSetting;
+	
+	
+	public Integer getJournalSettingId() {
+		return journalSettingId;
+	}
+	public void setJournalSettingId(Integer journalSettingId) {
+		this.journalSettingId = journalSettingId;
+	}
+	public JournalSetting getDeviceSetting() {
+		return deviceSetting;
+	}
+	public void setDeviceSetting(JournalSetting deviceSetting) {
+		this.deviceSetting = deviceSetting;
+	}
 	public Integer getJournalDeviceId() {
 		return journalDeviceId;
 	}

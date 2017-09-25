@@ -6,6 +6,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -61,8 +62,17 @@ public class JournalSetting {
 	@Version
 	private Date updatedTime;
 	
+	@OneToOne(mappedBy="deviceSetting")
+	private JournalDevices journalDevices;
 	
 	
+	
+	public JournalDevices getJournalDevices() {
+		return journalDevices;
+	}
+	public void setJournalDevices(JournalDevices journalDevices) {
+		this.journalDevices = journalDevices;
+	}
 	public String getRecord_user_name() {
 		return record_user_name;
 	}

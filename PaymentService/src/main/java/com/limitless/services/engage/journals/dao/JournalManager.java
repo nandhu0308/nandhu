@@ -100,58 +100,52 @@ public class JournalManager {
 					journalBean.setlName(journal.getJournalLastName());
 					journalBean.setMobile(journal.getJournalMobile());
 					journalBean.setEmpId(journal.getJournalEmpId());
-					Criteria deviceCriteria = session.createCriteria(JournalDevices.class);
-					Criterion jidCriterion = Restrictions.eq("journalId", journal.getJournalId());
-					Criterion macCriterion = Restrictions.eq("journalDeviceMacId", requestBean.getJournalDeviceMacId());
-					LogicalExpression logExp2 = Restrictions.and(jidCriterion, macCriterion);
-					deviceCriteria.add(logExp2);
-					deviceCriteria.add(Restrictions.eq("isActive", true));
-					List<JournalDevices> journalDevicesList = deviceCriteria.list();
-					log.debug("journal devices size : " + journalDevicesList.size());
-
-					if (journalDevicesList.size() > 0) {
-						Criteria settingsCriteria = session.createCriteria(JournalSetting.class);
-						settingsCriteria.add(Restrictions.eq("journalId", journal.getJournalId()));
-						settingsCriteria.add(Restrictions.eq("isActive", true));
-						List<JournalSetting> settingList = settingsCriteria.list();
-						log.debug("setting list size : " + settingList.size());
-						if (settingList.size() > 0) {
-							responseBean.setJournal(journalBean);
-							JSONObject sessionKeyJson = new JSONObject();
-							sessionKeyJson.put("role", "journal");
-							sessionKeyJson.put("key", journal.getJournalId());
-							sessionKeyJson.put("value", requestBean.getJournalPassword());
-							SessionKeys sessionKeys = new SessionKeys();
-							sessionKeys.setUserId(journal.getJournalId());
-							sessionKeys.setSessionKey(sessionKeyJson.toString());
-							sessionKeys.setKeyAlive(1);
-							session.persist(sessionKeys);
-							int sesssionKeyId = sessionKeys.getSessionId();
-							String sessionKeyString = sesssionKeyId + "." + sessionKeyJson.toString();
-							String sessionKeyB64 = Base64.getEncoder().encodeToString(sessionKeyString.getBytes());
-							log.debug("Session Key : " + sessionKeyB64);
-							responseBean.setAuthKey(sessionKeyB64);
-
-							for (JournalSetting setting : settingList) {
-								settingBean.setId(setting.getJournalSettingId());
-								settingBean.setJournalId(setting.getJournalId());
-								settingBean.setLanguageId(setting.getLanguageId());
-								settingBean.setApplnName(setting.getApplicationName());
-								settingBean.setHostPort(setting.getHostPort());
-								settingBean.setHostUrl(setting.getHostURL());
-								settingBean.setSuName(setting.getSuNAme());
-								settingBean.setSpwd(setting.getsPWD());
-								settingBean.setOutputUrlHls(setting.getOutputUrlHls());
-								settingBean.setOutputUrlRtsp(setting.getOutputUrlRtsp());
-								settingBean.setStreamName(setting.getStreamName());
-								settingBean.setRecord(setting.isRecord());
-								settingBean.setUpload(setting.isUpload());
-								settingBean.setRecordUserName(setting.getRecord_user_name());
-								settingBean.setRecordPassword(setting.getRecord_password());
-								responseBean.setJournalSetting(settingBean);
-							}
-						}
+					Criteria settingsCriteria = session.createCriteria(JournalSetting.class);
+					settingsCriteria.add(Restrictions.eq("journalId", journal.getJournalId()));
+					settingsCriteria.add(Restrictions.eq("isActive", true));
+					settingsCriteria.add(Restrictions.isNotNull("journalDevices"));
+					List<JournalSetting> settingList = settingsCriteria.list();
+					log.debug("setting list size : " + settingList.size());
+					JournalSetting setting = null;
+					if (settingList.size() > 0 && settingList.get(0).isActive()) {
+						setting = settingList.get(0);
 					}
+					if (setting != null) {
+						responseBean.setJournal(journalBean);
+						JSONObject sessionKeyJson = new JSONObject();
+						sessionKeyJson.put("role", "journal");
+						sessionKeyJson.put("key", journal.getJournalId());
+						sessionKeyJson.put("value", requestBean.getJournalPassword());
+						SessionKeys sessionKeys = new SessionKeys();
+						sessionKeys.setUserId(journal.getJournalId());
+						sessionKeys.setSessionKey(sessionKeyJson.toString());
+						sessionKeys.setKeyAlive(1);
+						session.persist(sessionKeys);
+						int sesssionKeyId = sessionKeys.getSessionId();
+						String sessionKeyString = sesssionKeyId + "." + sessionKeyJson.toString();
+						String sessionKeyB64 = Base64.getEncoder().encodeToString(sessionKeyString.getBytes());
+						log.debug("Session Key : " + sessionKeyB64);
+						responseBean.setAuthKey(sessionKeyB64);
+
+						settingBean.setId(setting.getJournalSettingId());
+						settingBean.setJournalId(setting.getJournalId());
+						settingBean.setLanguageId(setting.getLanguageId());
+						settingBean.setApplnName(setting.getApplicationName());
+						settingBean.setHostPort(setting.getHostPort());
+						settingBean.setHostUrl(setting.getHostURL());
+						settingBean.setSuName(setting.getSuNAme());
+						settingBean.setSpwd(setting.getsPWD());
+						settingBean.setOutputUrlHls(setting.getOutputUrlHls());
+						settingBean.setOutputUrlRtsp(setting.getOutputUrlRtsp());
+						settingBean.setStreamName(setting.getStreamName());
+						settingBean.setRecord(setting.isRecord());
+						settingBean.setUpload(setting.isUpload());
+						settingBean.setRecordUserName(setting.getRecord_user_name());
+						settingBean.setRecordPassword(setting.getRecord_password());
+						responseBean.setJournalSetting(settingBean);
+
+					}
+
 				}
 			}
 			transaction.commit();
