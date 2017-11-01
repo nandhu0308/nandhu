@@ -6,6 +6,7 @@ public class JournalLoginResponseBean {
 
 	private JournalBean journal;
 	private JournalSettingBean journalSetting;
+	private JournalLiveSettingsBean liveSettings;
 	private String authKey;
 	
 	public String getAuthKey() {
@@ -30,6 +31,14 @@ public class JournalLoginResponseBean {
 
 	public void setJournalSetting(JournalSettingBean journalSetting) {
 		this.journalSetting = journalSetting;
+	}
+
+	public JournalLiveSettingsBean getLiveSettings() {
+		return liveSettings;
+	}
+
+	public void setLiveSettings(JournalLiveSettingsBean liveSettings) {
+		this.liveSettings = liveSettings;
 	}
 
 }

@@ -69,6 +69,7 @@
   <mapping class="com.limitless.services.engage.entertainment.dao.ChannelCategory"/>
   <mapping class="com.limitless.services.engage.entertainment.dao.ChannelLanguage"/>
   <mapping class="com.limitless.services.engage.entertainment.dao.BroadcasterVideo"/>
+  <mapping class="com.limitless.services.engage.entertainment.dao.BroadcasterVideoNew"/>
   <mapping class="com.limitless.services.engage.entertainment.dao.ChannelVideo"/>
   <mapping class="com.limitless.services.engage.entertainment.dao.BroadcasterChannelCategory"/>
   <mapping class="com.limitless.services.engage.bills.dao.Bills"/>

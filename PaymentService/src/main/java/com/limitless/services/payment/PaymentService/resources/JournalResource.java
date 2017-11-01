@@ -1,7 +1,9 @@
 package com.limitless.services.payment.PaymentService.resources;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -13,6 +15,7 @@ import org.apache.log4j.Logger;
 import com.limitless.service.common.Message;
 import com.limitless.services.engage.journals.AuthResponseBean;
 import com.limitless.services.engage.journals.JournalBean;
+import com.limitless.services.engage.journals.JournalLiveSettingsBean;
 import com.limitless.services.engage.journals.JournalLoginRequestBean;
 import com.limitless.services.engage.journals.JournalLoginResponseBean;
 import com.limitless.services.engage.journals.NewJournalResponseBean;
@@ -72,5 +75,35 @@ public class JournalResource {
 		}
 		return Response.status(200).entity(responseBean).build();
 
+	}
+	
+	@Path("/channel/ls/{journalId}")
+	@GET
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public JournalLiveSettingsBean getJournalChannelLive(@PathParam("journalId") int journalId) {
+		JournalLiveSettingsBean settingsBean = new JournalLiveSettingsBean();
+		try {
+			JournalManager manager = new JournalManager();
+			settingsBean = manager.getJournalLiveSetting(journalId);
+		} catch(Exception e) {
+			logger.error("API Error", e);
+		}
+		return settingsBean;
+	}
+	
+	@Path("/channel/streamkey/{destination}")
+	@PUT
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public JournalLiveSettingsBean updateStreamKey(@PathParam("destination") String destination, JournalLiveSettingsBean requestBean) {
+		JournalLiveSettingsBean settingsBean = new JournalLiveSettingsBean();
+		try {
+			JournalManager manager = new JournalManager();
+			settingsBean = manager.updateStreamKey(destination, requestBean);
+		} catch(Exception e) {
+			logger.error("API Error", e);
+		}
+		return settingsBean;
 	}
 }
