@@ -25,6 +25,22 @@ import com.limitless.services.engage.journals.dao.JournalManager;
 public class JournalResource {
 	final static Logger logger = Logger.getLogger(JournalResource.class);
 
+	@GET
+	@Path("/getVersion")
+	public Response getVersion() {
+		logger.info("Reached Journal getVersion..");
+		String version = "";
+
+		try {
+			JournalManager manager = new JournalManager();
+			version = manager.getJournalVersion();
+		} catch (Exception e) {
+			logger.error("API Error", e);
+		}
+
+		return Response.status(200).entity(version).build();
+	}
+
 	@Path("/new")
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
@@ -76,7 +92,7 @@ public class JournalResource {
 		return Response.status(200).entity(responseBean).build();
 
 	}
-	
+
 	@Path("/channel/ls/{journalId}")
 	@GET
 	@Consumes(MediaType.APPLICATION_JSON)
@@ -86,22 +102,23 @@ public class JournalResource {
 		try {
 			JournalManager manager = new JournalManager();
 			settingsBean = manager.getJournalLiveSetting(journalId);
-		} catch(Exception e) {
+		} catch (Exception e) {
 			logger.error("API Error", e);
 		}
 		return settingsBean;
 	}
-	
+
 	@Path("/channel/streamkey/{destination}")
 	@PUT
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public JournalLiveSettingsBean updateStreamKey(@PathParam("destination") String destination, JournalLiveSettingsBean requestBean) {
+	public JournalLiveSettingsBean updateStreamKey(@PathParam("destination") String destination,
+			JournalLiveSettingsBean requestBean) {
 		JournalLiveSettingsBean settingsBean = new JournalLiveSettingsBean();
 		try {
 			JournalManager manager = new JournalManager();
 			settingsBean = manager.updateStreamKey(destination, requestBean);
-		} catch(Exception e) {
+		} catch (Exception e) {
 			logger.error("API Error", e);
 		}
 		return settingsBean;

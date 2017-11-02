@@ -330,5 +330,37 @@ public class JournalManager {
 		}
 		return settingsBean;
 	}
+	
+	
+	public String getJournalVersion() {
+		log.debug("Getting Journal Version");
+		String journalVersion = "1.0.01";
+		Session session = null;
+		Transaction transaction = null;
+
+		try {
+			session = sessionFactory.getCurrentSession();
+			transaction = session.beginTransaction();
+			JournalVersion version = (JournalVersion) session.get("com.limitless.services.engage.journals.dao.JournalVersion",
+					1);
+			if (version != null)
+				journalVersion = version.getVersion();
+			transaction.commit();
+
+		} catch (Exception e) {
+			if (transaction != null) {
+				transaction.rollback();
+			}
+			journalVersion = "1.0.01";
+			log.error("Getting journal version failed :" + e);
+
+		} finally {
+			if (session != null && session.isOpen()) {
+				session.close();
+			}
+		}
+		return journalVersion.trim();
+	}
+	
 
 }

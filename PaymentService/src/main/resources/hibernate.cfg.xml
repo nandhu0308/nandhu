@@ -87,5 +87,6 @@
   <mapping class="com.limitless.services.engage.journals.dao.Journal"/>
   <mapping class="com.limitless.services.engage.journals.dao.JournalDevices"/>
   <mapping class="com.limitless.services.engage.journals.dao.JournalSetting"/>
+  <mapping class="com.limitless.services.engage.journals.dao.JournalVersion"/>
  </session-factory>
 </hibernate-configuration>
