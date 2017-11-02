@@ -103,6 +103,15 @@ public class JournalManager {
 					journalBean.setlName(journal.getJournalLastName());
 					journalBean.setMobile(journal.getJournalMobile());
 					journalBean.setEmpId(journal.getJournalEmpId());
+
+					Criteria deviceCriteria = session.createCriteria(JournalDevices.class);
+					Criterion jidCriterion = Restrictions.eq("journalId", journal.getJournalId());
+					Criterion macCriterion = Restrictions.eq("journalDeviceMacId", requestBean.getJournalDeviceMacId());
+					LogicalExpression logExp2_mac = Restrictions.and(jidCriterion, macCriterion);
+					deviceCriteria.add(logExp2_mac);
+					deviceCriteria.add(Restrictions.eq("isActive", true));
+					List<JournalDevices> journalDevicesList = deviceCriteria.list();
+
 					Criteria settingsCriteria = session.createCriteria(JournalSetting.class);
 					settingsCriteria.add(Restrictions.eq("journalId", journal.getJournalId()));
 					settingsCriteria.add(Restrictions.eq("isActive", true));
@@ -152,18 +161,20 @@ public class JournalManager {
 						settingBean.setVideoFrameWidth(setting.getVideo_frame_width());
 						settingBean.setVideoFrameHeight(setting.getVideo_frame_height());
 						settingBean.setAbr(setting.isAbr());
-						responseBean.setJournalSetting(settingBean);
+						if (journalDevicesList != null && journalDevicesList.size() > 0)
+							responseBean.setJournalSetting(settingBean);
 
 					}
 					Criteria criteria = session.createCriteria(BroadcasterVideoNew.class);
-					Criterion channelIdCriterion = Restrictions.eq("broadcasterChannelId", journal.getJournalChannelId());
+					Criterion channelIdCriterion = Restrictions.eq("broadcasterChannelId",
+							journal.getJournalChannelId());
 					Criterion isLiveCriterion = Restrictions.eq("isLive", true);
 					LogicalExpression logExp2 = Restrictions.and(channelIdCriterion, isLiveCriterion);
 					criteria.add(logExp2);
 					List<BroadcasterVideoNew> videoList = criteria.list();
 					log.info("video size: " + videoList.size());
-					if(videoList.size() == 1) {
-						for(BroadcasterVideoNew video: videoList) {
+					if (videoList.size() == 1) {
+						for (BroadcasterVideoNew video : videoList) {
 							liveSettingsBean.setVideoId(video.getId());
 							liveSettingsBean.setJournalId(journal.getJournalId());
 							liveSettingsBean.setCurrentFBStreamKey(video.getFbStreamkey());
@@ -253,7 +264,7 @@ public class JournalManager {
 		}
 		return isJournalAuthorized;
 	}
-	
+
 	public JournalLiveSettingsBean getJournalLiveSetting(int journalId) {
 		JournalLiveSettingsBean settingBean = null;
 		Session session = null;
@@ -262,7 +273,7 @@ public class JournalManager {
 			session = sessionFactory.getCurrentSession();
 			transaction = session.beginTransaction();
 			Journal journal = (Journal) session.get("com.limitless.services.engage.journals.dao.Journal", journalId);
-			if(journal != null) {
+			if (journal != null) {
 				int channelId = journal.getJournalChannelId();
 				Criteria criteria = session.createCriteria(BroadcasterVideoNew.class);
 				Criterion channelIdCriterion = Restrictions.eq("broadcasterChannelId", channelId);
@@ -271,9 +282,9 @@ public class JournalManager {
 				criteria.add(logExp);
 				List<BroadcasterVideoNew> videoList = criteria.list();
 				log.info("video size: " + videoList.size());
-				if(videoList.size()==1) {
+				if (videoList.size() == 1) {
 					settingBean = new JournalLiveSettingsBean();
-					for(BroadcasterVideoNew video: videoList) {
+					for (BroadcasterVideoNew video : videoList) {
 						settingBean.setVideoId(video.getId());
 						settingBean.setCurrentFBStreamKey(video.getFbStreamkey());
 						settingBean.setCurrentYTStreamKey(video.getYtStreamkey());
@@ -284,7 +295,7 @@ public class JournalManager {
 				}
 			}
 			transaction.commit();
-		} catch(RuntimeException re) {
+		} catch (RuntimeException re) {
 			if (transaction != null) {
 				transaction.rollback();
 			}
@@ -296,7 +307,7 @@ public class JournalManager {
 		}
 		return settingBean;
 	}
-	
+
 	public JournalLiveSettingsBean updateStreamKey(String destination, JournalLiveSettingsBean requestBean) {
 		JournalLiveSettingsBean settingsBean = new JournalLiveSettingsBean();
 		Session session = null;
@@ -304,21 +315,22 @@ public class JournalManager {
 		try {
 			session = sessionFactory.getCurrentSession();
 			transaction = session.beginTransaction();
-			BroadcasterVideoNew video = (BroadcasterVideoNew) session.get("com.limitless.services.engage.entertainment.dao.BroadcasterVideoNew", requestBean.getVideoId());
-			if(destination.equals("fb")) {
+			BroadcasterVideoNew video = (BroadcasterVideoNew) session.get(
+					"com.limitless.services.engage.entertainment.dao.BroadcasterVideoNew", requestBean.getVideoId());
+			if (destination.equals("fb")) {
 				video.setFbStreamkey(requestBean.getNewFBStreamKey());
-			} else if(destination.equals("yt")) {
+			} else if (destination.equals("yt")) {
 				video.setYtStreamkey(requestBean.getNewYTStreamKey());
-			} else if(destination.equals("ha")) {
+			} else if (destination.equals("ha")) {
 				video.setHaStreamkey(requestBean.getNewHAStreamKey());
-			} else if(destination.equals("ps")) {
+			} else if (destination.equals("ps")) {
 				video.setPsStreamkey(requestBean.getNewPSStreamKey());
 			}
 			session.update(video);
 			settingsBean.setVideoId(video.getId());
 			settingsBean.setJournalId(requestBean.getJournalId());
 			transaction.commit();
-		} catch(RuntimeException re) {
+		} catch (RuntimeException re) {
 			if (transaction != null) {
 				transaction.rollback();
 			}
@@ -330,8 +342,7 @@ public class JournalManager {
 		}
 		return settingsBean;
 	}
-	
-	
+
 	public String getJournalVersion() {
 		log.debug("Getting Journal Version");
 		String journalVersion = "1.0.01";
@@ -341,8 +352,8 @@ public class JournalManager {
 		try {
 			session = sessionFactory.getCurrentSession();
 			transaction = session.beginTransaction();
-			JournalVersion version = (JournalVersion) session.get("com.limitless.services.engage.journals.dao.JournalVersion",
-					1);
+			JournalVersion version = (JournalVersion) session
+					.get("com.limitless.services.engage.journals.dao.JournalVersion", 1);
 			if (version != null)
 				journalVersion = version.getVersion();
 			transaction.commit();
@@ -361,6 +372,5 @@ public class JournalManager {
 		}
 		return journalVersion.trim();
 	}
-	
 
 }
