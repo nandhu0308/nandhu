@@ -163,25 +163,10 @@ public class JournalManager {
 						settingBean.setAbr(setting.isAbr());
 						if (journalDevicesList != null && journalDevicesList.size() > 0)
 							responseBean.setJournalSetting(settingBean);
-
-					}
-					Criteria criteria = session.createCriteria(BroadcasterVideoNew.class);
-					Criterion channelIdCriterion = Restrictions.eq("broadcasterChannelId",
-							journal.getJournalChannelId());
-					Criterion isLiveCriterion = Restrictions.eq("isLive", true);
-					LogicalExpression logExp2 = Restrictions.and(channelIdCriterion, isLiveCriterion);
-					criteria.add(logExp2);
-					List<BroadcasterVideoNew> videoList = criteria.list();
-					log.info("video size: " + videoList.size());
-					if (videoList.size() == 1) {
-						for (BroadcasterVideoNew video : videoList) {
-							liveSettingsBean.setVideoId(video.getId());
-							liveSettingsBean.setJournalId(journal.getJournalId());
-							liveSettingsBean.setCurrentFBStreamKey(video.getFbStreamkey());
-							liveSettingsBean.setCurrentHAStreamKey(video.getHaStreamkey());
-							liveSettingsBean.setCurrentPSStreamKey(video.getPsStreamkey());
-							liveSettingsBean.setCurrentYTStreamKey(video.getYtStreamkey());
-						}
+						liveSettingsBean.setJournalId(journal.getJournalId());
+						liveSettingsBean.setCurrentFBStreamKey(setting.getFbStreamkey());
+						liveSettingsBean.setCurrentPSStreamKey(setting.getPsStreamkey());
+						liveSettingsBean.setCurrentYTStreamKey(setting.getYtStreamkey());
 						responseBean.setLiveSettings(liveSettingsBean);
 					}
 				}
@@ -274,23 +259,21 @@ public class JournalManager {
 			transaction = session.beginTransaction();
 			Journal journal = (Journal) session.get("com.limitless.services.engage.journals.dao.Journal", journalId);
 			if (journal != null) {
-				int channelId = journal.getJournalChannelId();
-				Criteria criteria = session.createCriteria(BroadcasterVideoNew.class);
-				Criterion channelIdCriterion = Restrictions.eq("broadcasterChannelId", channelId);
-				Criterion isLiveCriterion = Restrictions.eq("isLive", true);
-				LogicalExpression logExp = Restrictions.and(channelIdCriterion, isLiveCriterion);
+				// int channelId = journal.getJournalChannelId();
+				Criteria criteria = session.createCriteria(JournalSetting.class);
+				Criterion journalIdCriterion = Restrictions.eq("journalId", journalId);
+				Criterion isActiveCriterion = Restrictions.eq("isActive", true);
+				LogicalExpression logExp = Restrictions.and(journalIdCriterion, isActiveCriterion);
 				criteria.add(logExp);
-				List<BroadcasterVideoNew> videoList = criteria.list();
-				log.info("video size: " + videoList.size());
-				if (videoList.size() == 1) {
+				List<JournalSetting> settingList = criteria.list();
+				log.info("setting list size: " + settingList.size());
+				if (settingList.size() == 1) {
 					settingBean = new JournalLiveSettingsBean();
-					for (BroadcasterVideoNew video : videoList) {
-						settingBean.setVideoId(video.getId());
-						settingBean.setCurrentFBStreamKey(video.getFbStreamkey());
-						settingBean.setCurrentYTStreamKey(video.getYtStreamkey());
-						settingBean.setCurrentHAStreamKey(video.getHaStreamkey());
-						settingBean.setCurrentPSStreamKey(video.getPsStreamkey());
-						settingBean.setJournalId(journalId);
+					for (JournalSetting setting : settingList) {
+						settingBean.setJournalId(journal.getJournalId());
+						settingBean.setCurrentFBStreamKey(setting.getFbStreamkey());
+						settingBean.setCurrentPSStreamKey(setting.getPsStreamkey());
+						settingBean.setCurrentYTStreamKey(setting.getYtStreamkey());
 					}
 				}
 			}
@@ -315,20 +298,32 @@ public class JournalManager {
 		try {
 			session = sessionFactory.getCurrentSession();
 			transaction = session.beginTransaction();
-			BroadcasterVideoNew video = (BroadcasterVideoNew) session.get(
-					"com.limitless.services.engage.entertainment.dao.BroadcasterVideoNew", requestBean.getVideoId());
-			if (destination.equals("fb")) {
-				video.setFbStreamkey(requestBean.getNewFBStreamKey());
-			} else if (destination.equals("yt")) {
-				video.setYtStreamkey(requestBean.getNewYTStreamKey());
-			} else if (destination.equals("ha")) {
-				video.setHaStreamkey(requestBean.getNewHAStreamKey());
-			} else if (destination.equals("ps")) {
-				video.setPsStreamkey(requestBean.getNewPSStreamKey());
+			Journal journal = (Journal) session
+					.get("com.limitless.services.engage.journals.dao.Journal", requestBean.getJournalId());
+			if (journal != null) {
+				Criteria criteria = session.createCriteria(JournalSetting.class);
+				Criterion jidCriterion = Restrictions.eq("journalId", requestBean.getJournalId());
+				Criterion isActive = Restrictions.eq("isActive", true);
+				LogicalExpression logExp = Restrictions.and(jidCriterion, isActive);
+				criteria.add(logExp);
+				List<JournalSetting> settingList = criteria.list();
+				log.info("setting list size: " + settingList.size());
+				if(settingList.size() == 1) {
+					for(JournalSetting setting: settingList) {
+						JournalSetting instance = (JournalSetting) session
+								.get("com.limitless.services.engage.journals.dao.JournalSetting", setting.getJournalSettingId());
+						if (destination.equals("fb")) {
+							instance.setFbStreamkey(requestBean.getNewFBStreamKey());
+						} else if (destination.equals("yt")) {
+							instance.setYtStreamkey(requestBean.getNewYTStreamKey());
+						} else if (destination.equals("ps")) {
+							instance.setPsStreamkey(requestBean.getNewPSStreamKey());
+						}
+						session.update(setting);
+						settingsBean.setJournalId(requestBean.getJournalId());
+					}
+				}
 			}
-			session.update(video);
-			settingsBean.setVideoId(video.getId());
-			settingsBean.setJournalId(requestBean.getJournalId());
 			transaction.commit();
 		} catch (RuntimeException re) {
 			if (transaction != null) {
