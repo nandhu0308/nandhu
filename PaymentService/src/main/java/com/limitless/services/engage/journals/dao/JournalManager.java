@@ -142,6 +142,13 @@ public class JournalManager {
 						settingBean.setUpload(setting.isUpload());
 						settingBean.setRecordUserName(setting.getRecord_user_name());
 						settingBean.setRecordPassword(setting.getRecord_password());
+						settingBean.setFramesPerSecond(setting.getFrames_per_second());
+						settingBean.setKeyFrameInterval(setting.getKeyframe_interval());
+						settingBean.setVideoBitrate(setting.getVideo_bitrate());
+						settingBean.setAudioBitrate(setting.getAudio_bitrate());
+						settingBean.setVideoFrameWidth(setting.getVideo_frame_width());
+						settingBean.setVideoFrameHeight(setting.getVideo_frame_height());
+						settingBean.setAbr(setting.isAbr());
 						responseBean.setJournalSetting(settingBean);
 
 					}

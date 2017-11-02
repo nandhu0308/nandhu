@@ -65,8 +65,60 @@ public class JournalSetting {
 	@OneToOne(mappedBy="deviceSetting")
 	private JournalDevices journalDevices;
 	
+	private int frames_per_second;
+	private int keyframe_interval;
+	private int video_bitrate;
+	private int audio_bitrate;
+	private int video_frame_width;
+	private int video_frame_height;
+	@Column(name="ABR", nullable=false, columnDefinition="TINYINT(1)")
+	private boolean abr;
 	
 	
+	
+	public int getFrames_per_second() {
+		return frames_per_second;
+	}
+	public void setFrames_per_second(int frames_per_second) {
+		this.frames_per_second = frames_per_second;
+	}
+	public int getKeyframe_interval() {
+		return keyframe_interval;
+	}
+	public void setKeyframe_interval(int keyframe_interval) {
+		this.keyframe_interval = keyframe_interval;
+	}
+	public int getVideo_bitrate() {
+		return video_bitrate;
+	}
+	public void setVideo_bitrate(int video_bitrate) {
+		this.video_bitrate = video_bitrate;
+	}
+	public int getAudio_bitrate() {
+		return audio_bitrate;
+	}
+	public void setAudio_bitrate(int audio_bitrate) {
+		this.audio_bitrate = audio_bitrate;
+	}
+	public int getVideo_frame_width() {
+		return video_frame_width;
+	}
+	public void setVideo_frame_width(int video_frame_width) {
+		this.video_frame_width = video_frame_width;
+	}
+	
+	public int getVideo_frame_height() {
+		return video_frame_height;
+	}
+	public void setVideo_frame_height(int video_frame_height) {
+		this.video_frame_height = video_frame_height;
+	}
+	public boolean isAbr() {
+		return abr;
+	}
+	public void setAbr(boolean abr) {
+		this.abr = abr;
+	}
 	public JournalDevices getJournalDevices() {
 		return journalDevices;
 	}
