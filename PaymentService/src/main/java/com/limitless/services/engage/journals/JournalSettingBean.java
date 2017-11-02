@@ -6,8 +6,17 @@ public class JournalSettingBean {
 			audioBitrate,framesPerSecond;
 	private String applnName, hostUrl, hostPort, streamName, suName, spwd, outputUrlHls, outputUrlRtsp, recordUserName,
 			recordPassword;
-	private boolean isRecord, isUpload, abr;
+	private boolean isRecord, isUpload, abr,enableSocialMedia;
 	
+	
+
+	public boolean isEnableSocialMedia() {
+		return enableSocialMedia;
+	}
+
+	public void setEnableSocialMedia(boolean enableSocialMedia) {
+		this.enableSocialMedia = enableSocialMedia;
+	}
 
 	public int getFramesPerSecond() {
 		return framesPerSecond;

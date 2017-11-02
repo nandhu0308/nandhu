@@ -161,6 +161,7 @@ public class JournalManager {
 						settingBean.setVideoFrameWidth(setting.getVideo_frame_width());
 						settingBean.setVideoFrameHeight(setting.getVideo_frame_height());
 						settingBean.setAbr(setting.isAbr());
+						settingBean.setEnableSocialMedia(setting.isEnableSocialMedia());						
 						if (journalDevicesList != null && journalDevicesList.size() > 0)
 							responseBean.setJournalSetting(settingBean);
 
