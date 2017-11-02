@@ -73,9 +73,33 @@ public class JournalSetting {
 	private int video_frame_height;
 	@Column(name="ABR", nullable=false, columnDefinition="TINYINT(1)")
 	private boolean abr;
+	@Column(name="YT_STREAMKEY")
+	private String ytStreamkey;
+	@Column(name="FB_STREAMKEY")
+	private String fbStreamkey;
+	@Column(name="PS_STREAMKEY")
+	private String psStreamkey;
 	
 	
 	
+	public String getYtStreamkey() {
+		return ytStreamkey;
+	}
+	public void setYtStreamkey(String ytStreamkey) {
+		this.ytStreamkey = ytStreamkey;
+	}
+	public String getFbStreamkey() {
+		return fbStreamkey;
+	}
+	public void setFbStreamkey(String fbStreamkey) {
+		this.fbStreamkey = fbStreamkey;
+	}
+	public String getPsStreamkey() {
+		return psStreamkey;
+	}
+	public void setPsStreamkey(String psStreamkey) {
+		this.psStreamkey = psStreamkey;
+	}
 	public int getFrames_per_second() {
 		return frames_per_second;
 	}
