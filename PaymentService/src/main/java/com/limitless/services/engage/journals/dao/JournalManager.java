@@ -168,6 +168,7 @@ public class JournalManager {
 						liveSettingsBean.setCurrentFBStreamKey(setting.getFbStreamkey());
 						liveSettingsBean.setCurrentPSStreamKey(setting.getPsStreamkey());
 						liveSettingsBean.setCurrentYTStreamKey(setting.getYtStreamkey());
+						liveSettingsBean.setFbPageId(setting.getFb_page_id());
 						responseBean.setLiveSettings(liveSettingsBean);
 					}
 				}
@@ -275,6 +276,7 @@ public class JournalManager {
 						settingBean.setCurrentFBStreamKey(setting.getFbStreamkey());
 						settingBean.setCurrentPSStreamKey(setting.getPsStreamkey());
 						settingBean.setCurrentYTStreamKey(setting.getYtStreamkey());
+						settingBean.setFbPageId(setting.getFb_page_id());
 					}
 				}
 			}
