@@ -112,15 +112,20 @@ public class JournalResource {
 	@PUT
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public JournalLiveSettingsBean updateStreamKey(@PathParam("destination") String destination,
-			JournalLiveSettingsBean requestBean) {
-		JournalLiveSettingsBean settingsBean = new JournalLiveSettingsBean();
+	public Response updateStreamKey(@PathParam("destination") String destination, JournalLiveSettingsBean requestBean) {
+		boolean result = false;
 		try {
 			JournalManager manager = new JournalManager();
-			settingsBean = manager.updateStreamKey(destination, requestBean);
+			manager.updateStreamKey(destination, requestBean);
+			result = true;
 		} catch (Exception e) {
 			logger.error("API Error", e);
 		}
-		return settingsBean;
+		return getResponse(result);
 	}
+
+	private Response getResponse(boolean result) {
+		return result ? Response.status(200).build() : Response.status(404).build();
+	}
+
 }
