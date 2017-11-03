@@ -323,54 +323,17 @@ public class JournalManager {
 							instance.setFbStreamkey(requestBean.getNewFBStreamKey());
 							session.update(instance);
 							settingsBean.setJournalId(requestBean.getJournalId());
-							WebResource webResource = client
-									.resource(WOWZA_HOST+instance.getApplicationName()+"/pushpublish/mapentries");
-							ClientResponse clientResponse = webResource.accept("application/json").get(ClientResponse.class);
-							String stringResponse = clientResponse.getEntity(String.class);
-							log.info("wowza response: "+ stringResponse);
-							JSONObject getStreamTargetJson = new JSONObject(stringResponse);
-							JSONArray existingStreamTargets = getStreamTargetJson.getJSONArray("mapEntries");
-							log.info("existing streams size: " + existingStreamTargets);
-							for(int i=0; i<existingStreamTargets.length(); i++) {
-								JSONObject mapEntry = existingStreamTargets.getJSONObject(i);
-								if(mapEntry.getString("host").equals("rtmp-api.facebook.com")) {
-									String oldEntryName = mapEntry.getString("entryName");
-									mapEntry.put("entryName", instance.getApplicationName()+"-facebook-"+System.currentTimeMillis());
-									mapEntry.put("streamName", instance.getFbStreamkey());
-									log.info("new stream target json: "+ mapEntry.toString());
-									WebResource createStreamTargetWebResource = client
-											.resource(WOWZA_HOST+instance.getApplicationName()+"/pushpublish/mapentries/"+instance.getApplicationName()+"-facebook-"+System.currentTimeMillis());
-									ClientResponse createStreamTargetClientResponse = createStreamTargetWebResource.accept("application/json")
-											.type("application/json")
-											.post(ClientResponse.class, mapEntry);
-									String createStreamTargetResponseString = createStreamTargetClientResponse.getEntity(String.class);
-									log.info("stream target creation response: "+ createStreamTargetResponseString);
-									JSONObject createStreamTargetResponseJson = new JSONObject(createStreamTargetResponseString);
-									if(createStreamTargetResponseJson.getBoolean("success")) {
-										WebResource deleteStreamTargetWebResource = client
-												.resource(WOWZA_HOST+instance.getApplicationName()+"/pushpublish/mapentries/"+oldEntryName);
-										ClientResponse deleteStreamTargetResponseClientResponse = deleteStreamTargetWebResource.accept("application/json")
-												.type("application/json")
-												.delete(ClientResponse.class);
-										String deleteStreamTargetResponseString = deleteStreamTargetResponseClientResponse.getEntity(String.class);
-										log.info("stream target delete response: "+ deleteStreamTargetResponseString);
-										JSONObject deleteStreamTargetResponseJson = new JSONObject(deleteStreamTargetResponseString);
-										if(deleteStreamTargetResponseJson.getBoolean("success")) {
-											log.info("stream target cycle success");
-										} else {
-											log.info("stream target cycle failed");
-										}
-									}
-								}
-							}
+							wowzaStreamTargetUpdater(instance.getApplicationName(), "facebook", instance.getFbStreamkey());
 						} else if (destination.equals("yt")) {
 							instance.setYtStreamkey(requestBean.getNewYTStreamKey());
 							session.update(setting);
 							settingsBean.setJournalId(requestBean.getJournalId());
+							wowzaStreamTargetUpdater(instance.getApplicationName(), "youtube", instance.getYtStreamkey());
 						} else if (destination.equals("ps")) {
 							instance.setPsStreamkey(requestBean.getNewPSStreamKey());
 							session.update(setting);
 							settingsBean.setJournalId(requestBean.getJournalId());
+							wowzaStreamTargetUpdater(instance.getApplicationName(), "periscope", instance.getPsStreamkey());
 						}
 					}
 				}
@@ -418,5 +381,49 @@ public class JournalManager {
 		}
 		return journalVersion.trim();
 	}
-
+	
+	public void wowzaStreamTargetUpdater(String applicationName, String destination, String newStreamKey) {
+		WebResource webResource = client
+				.resource(WOWZA_HOST+applicationName+"/pushpublish/mapentries");
+		ClientResponse clientResponse = webResource.accept("application/json").get(ClientResponse.class);
+		String stringResponse = clientResponse.getEntity(String.class);
+		log.info("wowza response: "+ stringResponse);
+		JSONObject getStreamTargetJson = new JSONObject(stringResponse);
+		JSONArray existingStreamTargets = getStreamTargetJson.getJSONArray("mapEntries");
+		log.info("existing streams: " + existingStreamTargets);
+		if(existingStreamTargets.length() > 0) {
+			for(int i=0; i<existingStreamTargets.length(); i++) {
+				JSONObject mapEntry = existingStreamTargets.getJSONObject(i);
+				if(mapEntry.getString("host").equals("rtmp-api.facebook.com")) {
+					String oldEntryName = mapEntry.getString("entryName");
+					mapEntry.put("entryName", applicationName+"-facebook-"+System.currentTimeMillis());
+					mapEntry.put("streamName", newStreamKey);
+					log.info("new stream target json: "+ mapEntry.toString());
+					WebResource createStreamTargetWebResource = client
+							.resource(WOWZA_HOST+applicationName+"/pushpublish/mapentries/"+applicationName+"-facebook-"+System.currentTimeMillis());
+					ClientResponse createStreamTargetClientResponse = createStreamTargetWebResource.accept("application/json")
+							.type("application/json")
+							.post(ClientResponse.class, mapEntry.toString());
+					String createStreamTargetResponseString = createStreamTargetClientResponse.getEntity(String.class);
+					log.info("stream target creation response: "+ createStreamTargetResponseString);
+					JSONObject createStreamTargetResponseJson = new JSONObject(createStreamTargetResponseString);
+					if(createStreamTargetResponseJson.getBoolean("success")) {
+						WebResource deleteStreamTargetWebResource = client
+								.resource(WOWZA_HOST+applicationName+"/pushpublish/mapentries/"+oldEntryName);
+						ClientResponse deleteStreamTargetResponseClientResponse = deleteStreamTargetWebResource.accept("application/json")
+								.type("application/json")
+								.delete(ClientResponse.class);
+						String deleteStreamTargetResponseString = deleteStreamTargetResponseClientResponse.getEntity(String.class);
+						log.info("stream target delete response: "+ deleteStreamTargetResponseString);
+						JSONObject deleteStreamTargetResponseJson = new JSONObject(deleteStreamTargetResponseString);
+						if(deleteStreamTargetResponseJson.getBoolean("success")) {
+							log.info("stream target cycle success");
+						} else {
+							log.info("stream target cycle failed");
+						}
+					}
+				}
+			}
+		}
+	}
 }
