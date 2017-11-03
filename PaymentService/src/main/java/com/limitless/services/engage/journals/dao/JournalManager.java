@@ -326,7 +326,7 @@ public class JournalManager {
 							settingsBean.setJournalId(requestBean.getJournalId());
 							wowzaFacebookStreamTargetUpdater(instance.getApplicationName(), instance.getFbStreamkey(),
 									requestBean.isFacebookEnabled());
-						} else if (destination.equals("yt") && requestBean.isYoutubeKeyUpdated()) {
+						} else if (destination.equals("yt")) {
 							instance.setYtStreamkey(requestBean.getNewYTStreamKey());
 							session.update(setting);
 							settingsBean.setJournalId(requestBean.getJournalId());

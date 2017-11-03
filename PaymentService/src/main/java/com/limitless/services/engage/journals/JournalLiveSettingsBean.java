@@ -13,11 +13,7 @@ public class JournalLiveSettingsBean {
 	private String newPSStreamKey;
 	private String fbPageId;
 	private boolean youtubeEnabled = false, facebookEnabled = false, periscopeEnabled = false;
-
-	public boolean isYoutubeKeyUpdated() {
-		return currentYTStreamKey != null && newYTStreamKey != null
-				&& !currentYTStreamKey.equalsIgnoreCase(newYTStreamKey) && !youtubeEnabled;
-	}
+	
 
 	public boolean isYoutubeEnabled() {
 		return youtubeEnabled;
