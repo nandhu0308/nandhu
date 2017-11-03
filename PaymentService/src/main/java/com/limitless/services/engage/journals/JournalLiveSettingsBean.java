@@ -12,6 +12,50 @@ public class JournalLiveSettingsBean {
 	private String currentPSStreamKey;
 	private String newPSStreamKey;
 	private String fbPageId;
+	private boolean youtubeEnabled = true, facebookEnabled = true, periscopeEnabled = true;
+
+	public boolean isYoutubeKeyUpdated() {
+		return currentYTStreamKey != null && newYTStreamKey != null
+				&& !currentYTStreamKey.equalsIgnoreCase(newYTStreamKey);
+	}
+
+	
+	
+	public boolean isYoutubeEnabled() {
+		return youtubeEnabled;
+	}
+
+
+
+	public void setYoutubeEnabled(boolean youtubeEnabled) {
+		this.youtubeEnabled = youtubeEnabled;
+	}
+
+
+
+	public boolean isFacebookEnabled() {
+		return facebookEnabled;
+	}
+
+
+
+	public void setFacebookEnabled(boolean facebookEnabled) {
+		this.facebookEnabled = facebookEnabled;
+	}
+
+
+
+	public boolean isPeriscopeEnabled() {
+		return periscopeEnabled;
+	}
+
+
+
+	public void setPeriscopeEnabled(boolean periscopeEnabled) {
+		this.periscopeEnabled = periscopeEnabled;
+	}
+
+
 
 	public String getFbPageId() {
 		return fbPageId;

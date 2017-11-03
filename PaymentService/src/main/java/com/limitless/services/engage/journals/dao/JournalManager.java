@@ -324,17 +324,20 @@ public class JournalManager {
 							instance.setFbStreamkey(requestBean.getNewFBStreamKey());
 							session.update(instance);
 							settingsBean.setJournalId(requestBean.getJournalId());
-							wowzaFacebookStreamTargetUpdater(instance.getApplicationName(), instance.getFbStreamkey());
-						} else if (destination.equals("yt")) {
+							wowzaFacebookStreamTargetUpdater(instance.getApplicationName(), instance.getFbStreamkey(),
+									requestBean.isFacebookEnabled());
+						} else if (destination.equals("yt") && requestBean.isYoutubeKeyUpdated()) {
 							instance.setYtStreamkey(requestBean.getNewYTStreamKey());
 							session.update(setting);
 							settingsBean.setJournalId(requestBean.getJournalId());
-							wowzaYoutubeStreamTargetUpdater(instance.getApplicationName(), instance.getYtStreamkey());
+							wowzaYoutubeStreamTargetUpdater(instance.getApplicationName(), instance.getYtStreamkey(),
+									requestBean.isYoutubeEnabled());
 						} else if (destination.equals("ps")) {
 							instance.setPsStreamkey(requestBean.getNewPSStreamKey());
 							session.update(setting);
 							settingsBean.setJournalId(requestBean.getJournalId());
-							wowzaPeriscopeStreamTargetUpdater(instance.getApplicationName(), instance.getPsStreamkey());
+							wowzaPeriscopeStreamTargetUpdater(instance.getApplicationName(), instance.getPsStreamkey(),
+									requestBean.isPeriscopeEnabled());
 						}
 					}
 				}
@@ -383,7 +386,7 @@ public class JournalManager {
 		return journalVersion.trim();
 	}
 
-	public void wowzaFacebookStreamTargetUpdater(String applicationName, String newStreamKey) {
+	public void wowzaFacebookStreamTargetUpdater(String applicationName, String newStreamKey, boolean enableTarget) {
 		WebResource webResource = client.resource(WOWZA_HOST + applicationName + "/pushpublish/mapentries");
 		ClientResponse clientResponse = webResource.accept("application/json").get(ClientResponse.class);
 		String stringResponse = clientResponse.getEntity(String.class);
@@ -398,6 +401,7 @@ public class JournalManager {
 					String oldEntryName = mapEntry.getString("entryName");
 					mapEntry.put("entryName", applicationName + "-facebook-" + System.currentTimeMillis());
 					mapEntry.put("streamName", newStreamKey);
+					mapEntry.put("enabled", enableTarget);
 					log.info("new stream target json: " + mapEntry.toString());
 					WebResource createStreamTargetWebResource = client.resource(WOWZA_HOST + applicationName
 							+ "/pushpublish/mapentries/" + applicationName + "-facebook-" + System.currentTimeMillis());
@@ -427,7 +431,7 @@ public class JournalManager {
 		}
 	}
 
-	public void wowzaYoutubeStreamTargetUpdater(String applicationName, String newStreamKey) {
+	public void wowzaYoutubeStreamTargetUpdater(String applicationName, String newStreamKey, boolean enableTarget) {
 		WebResource webResource = client.resource(WOWZA_HOST + applicationName + "/pushpublish/mapentries");
 		ClientResponse clientResponse = webResource.accept("application/json").get(ClientResponse.class);
 		String stringResponse = clientResponse.getEntity(String.class);
@@ -442,6 +446,7 @@ public class JournalManager {
 					String oldEntryName = mapEntry.getString("entryName");
 					mapEntry.put("entryName", applicationName + "-youtube-" + System.currentTimeMillis());
 					mapEntry.put("streamName", newStreamKey);
+					mapEntry.put("enabled", enableTarget);
 					log.info("new stream target json: " + mapEntry.toString());
 					WebResource createStreamTargetWebResource = client.resource(WOWZA_HOST + applicationName
 							+ "/pushpublish/mapentries/" + applicationName + "-youtube-" + System.currentTimeMillis());
@@ -471,7 +476,7 @@ public class JournalManager {
 		}
 	}
 
-	public void wowzaPeriscopeStreamTargetUpdater(String applicationName, String newStreamKey) {
+	public void wowzaPeriscopeStreamTargetUpdater(String applicationName, String newStreamKey, boolean enableTarget) {
 		WebResource webResource = client.resource(WOWZA_HOST + applicationName + "/pushpublish/mapentries");
 		ClientResponse clientResponse = webResource.accept("application/json").get(ClientResponse.class);
 		String stringResponse = clientResponse.getEntity(String.class);
@@ -486,6 +491,7 @@ public class JournalManager {
 					String oldEntryName = mapEntry.getString("entryName");
 					mapEntry.put("entryName", applicationName + "-periscope-" + System.currentTimeMillis());
 					mapEntry.put("streamName", newStreamKey);
+					mapEntry.put("enabled", enableTarget);
 					log.info("new stream target json: " + mapEntry.toString());
 					WebResource createStreamTargetWebResource = client
 							.resource(WOWZA_HOST + applicationName + "/pushpublish/mapentries/" + applicationName
