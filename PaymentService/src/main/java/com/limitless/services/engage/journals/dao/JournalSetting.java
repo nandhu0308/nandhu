@@ -80,10 +80,19 @@ public class JournalSetting {
 	@Column(name = "PS_STREAMKEY")
 	private String psStreamkey;
 	@Column(name = "ENABLE_SOCIAL_MEDIA", nullable = false, columnDefinition = "TINYINT(1)")
-	private boolean enableSocialMedia;
-	private String fb_page_id;
+	private boolean enableSocialMedia;	
+	private String fb_page_names;
+	
 
 	
+	public String getFb_page_names() {
+		return fb_page_names;
+	}
+
+	public void setFb_page_names(String fb_page_names) {
+		this.fb_page_names = fb_page_names;
+	}
+
 	public boolean isEnableSocialMedia() {
 		return enableSocialMedia;
 	}
@@ -92,14 +101,7 @@ public class JournalSetting {
 		this.enableSocialMedia = enableSocialMedia;
 	}
 
-	public String getFb_page_id() {
-		return fb_page_id;
-	}
-
-	public void setFb_page_id(String fb_page_id) {
-		this.fb_page_id = fb_page_id;
-	}
-
+	
 	public String getYtStreamkey() {
 		return ytStreamkey;
 	}
@@ -229,7 +231,7 @@ public class JournalSetting {
 	}
 
 	public String getApplicationName() {
-		return applicationName;
+		return applicationName.trim();
 	}
 
 	public void setApplicationName(String applicationName) {
@@ -237,7 +239,7 @@ public class JournalSetting {
 	}
 
 	public String getHostURL() {
-		return hostURL;
+		return hostURL.trim();
 	}
 
 	public void setHostURL(String hostURL) {
@@ -245,7 +247,7 @@ public class JournalSetting {
 	}
 
 	public String getHostPort() {
-		return hostPort;
+		return hostPort.trim();
 	}
 
 	public void setHostPort(String hostPort) {
@@ -253,7 +255,7 @@ public class JournalSetting {
 	}
 
 	public String getStreamName() {
-		return streamName;
+		return streamName.trim();
 	}
 
 	public void setStreamName(String streamName) {

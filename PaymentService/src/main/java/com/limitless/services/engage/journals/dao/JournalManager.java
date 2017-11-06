@@ -20,6 +20,7 @@ import com.limitless.services.engage.dao.SessionKeys;
 import com.limitless.services.engage.entertainment.dao.BroadcasterVideo;
 import com.limitless.services.engage.entertainment.dao.BroadcasterVideoNew;
 import com.limitless.services.engage.journals.JournalBean;
+import com.limitless.services.engage.journals.JournalGoLiveSettingsBean;
 import com.limitless.services.engage.journals.JournalLiveSettingsBean;
 import com.limitless.services.engage.journals.JournalLoginRequestBean;
 import com.limitless.services.engage.journals.JournalLoginResponseBean;
@@ -170,10 +171,9 @@ public class JournalManager {
 								|| (journalDevicesList != null && journalDevicesList.size() > 0))
 							responseBean.setJournalSetting(settingBean);
 						liveSettingsBean.setJournalId(journal.getJournalId());
-						liveSettingsBean.setCurrentFBStreamKey(setting.getFbStreamkey());
 						liveSettingsBean.setCurrentPSStreamKey(setting.getPsStreamkey());
 						liveSettingsBean.setCurrentYTStreamKey(setting.getYtStreamkey());
-						liveSettingsBean.setFbPageId(setting.getFb_page_id());
+
 						responseBean.setLiveSettings(liveSettingsBean);
 					}
 				}
@@ -278,10 +278,9 @@ public class JournalManager {
 					settingBean = new JournalLiveSettingsBean();
 					for (JournalSetting setting : settingList) {
 						settingBean.setJournalId(journal.getJournalId());
-						settingBean.setCurrentFBStreamKey(setting.getFbStreamkey());
 						settingBean.setCurrentPSStreamKey(setting.getPsStreamkey());
 						settingBean.setCurrentYTStreamKey(setting.getYtStreamkey());
-						settingBean.setFbPageId(setting.getFb_page_id());
+
 					}
 				}
 			}
@@ -299,7 +298,7 @@ public class JournalManager {
 		return settingBean;
 	}
 
-	public JournalLiveSettingsBean updateStreamKey(String destination, JournalLiveSettingsBean requestBean) {
+	public JournalLiveSettingsBean updateGoLiveSettings(String destination, JournalGoLiveSettingsBean requestBean) {
 		JournalLiveSettingsBean settingsBean = new JournalLiveSettingsBean();
 		Session session = null;
 		Transaction transaction = null;
@@ -322,11 +321,13 @@ public class JournalManager {
 								"com.limitless.services.engage.journals.dao.JournalSetting",
 								setting.getJournalSettingId());
 						if (destination.equals("fb")) {
-							instance.setFbStreamkey(requestBean.getNewFBStreamKey());
+							instance.setFbStreamkey(requestBean.getCommaSeparatedFbStreamKeys());
+							instance.setFb_page_names(requestBean.getFbPageNames());
 							session.update(instance);
 							settingsBean.setJournalId(requestBean.getJournalId());
+
 							wowzaFacebookStreamTargetUpdater(instance.getApplicationName(), instance.getStreamName(),
-									instance.getFbStreamkey(), requestBean.isFacebookEnabled());
+									requestBean.getFbStreamKeys(), requestBean.isFacebookEnabled());
 						} else if (destination.equals("yt")) {
 							instance.setYtStreamkey(requestBean.getNewYTStreamKey());
 							session.update(setting);
@@ -387,8 +388,10 @@ public class JournalManager {
 		return journalVersion.trim();
 	}
 
-	public void wowzaFacebookStreamTargetUpdater(String applicationName, String sourceStreamName, String newStreamKey,
-			boolean enableTarget) {
+	public void wowzaFacebookStreamTargetUpdater(String applicationName, String sourceStreamName,
+			List<String> newStreamKeys, boolean enableTarget) {
+		if (newStreamKeys != null && newStreamKeys.size() == 0)
+			return;
 		WebResource webResource = client.resource(WOWZA_HOST + applicationName + "/pushpublish/mapentries");
 		ClientResponse clientResponse = webResource.accept("application/json").get(ClientResponse.class);
 		String stringResponse = clientResponse.getEntity(String.class);
@@ -397,24 +400,66 @@ public class JournalManager {
 		JSONArray existingStreamTargets = getStreamTargetJson.getJSONArray("mapEntries");
 		log.info("existing streams: " + existingStreamTargets);
 		if (existingStreamTargets.length() > 0) {
+			if (createNewFbStreams(applicationName, sourceStreamName, newStreamKeys, enableTarget,
+					existingStreamTargets))
+				deleteAllFbStreamTarget(applicationName, existingStreamTargets);
+		}
+	}
+
+	private JSONObject getFbMapEntry(JSONArray existingStreamTargets) {
+		JSONObject mapEntry = null;
+		for (int i = 0; i < existingStreamTargets.length(); i++) {
+			if (mapEntry == null) {
+				mapEntry = existingStreamTargets.getJSONObject(i);
+				if (mapEntry.getString("host").equals("rtmp-api.facebook.com")) {
+					break;
+				} else {
+					mapEntry = null;
+					continue;
+				}
+			}
+		}
+		return mapEntry;
+	}
+
+	private boolean createNewFbStreams(String applicationName, String sourceStreamName, List<String> newStreamKeys,
+			boolean enableTarget, JSONArray existingStreamTargets) {
+		boolean result = true;
+		JSONObject mapEntryOriginal = getFbMapEntry(existingStreamTargets);
+		if (mapEntryOriginal != null) {
+			for (int i = 0; i < newStreamKeys.size(); i++) {
+				JSONObject mapEntry = new JSONObject(mapEntryOriginal.toString());
+				mapEntry.put("entryName", applicationName + "-facebook-" + i + "-" + System.currentTimeMillis());
+				mapEntry.put("streamName", newStreamKeys.get(i));
+				mapEntry.put("sourceStreamName", sourceStreamName);
+				mapEntry.put("enabled", enableTarget);
+				log.info("new stream target json: " + mapEntry.toString());
+				WebResource createStreamTargetWebResource = client
+						.resource(WOWZA_HOST + applicationName + "/pushpublish/mapentries/" + applicationName
+								+ "-facebook-" + i + "-" + System.currentTimeMillis());
+				ClientResponse createStreamTargetClientResponse = createStreamTargetWebResource
+						.accept("application/json").type("application/json")
+						.post(ClientResponse.class, mapEntry.toString());
+				String createStreamTargetResponseString = createStreamTargetClientResponse.getEntity(String.class);
+				log.info("stream target creation response: " + createStreamTargetResponseString);
+				JSONObject createStreamTargetResponseJson = new JSONObject(createStreamTargetResponseString);
+				if (createStreamTargetResponseJson.getBoolean("success")) {
+					result = result && true;
+				} else
+					result = result && false;
+
+			}
+		}
+		return result;
+	}
+
+	private void deleteAllFbStreamTarget(String applicationName, JSONArray existingStreamTargets) {
+		if (existingStreamTargets.length() > 0) {
 			for (int i = 0; i < existingStreamTargets.length(); i++) {
 				JSONObject mapEntry = existingStreamTargets.getJSONObject(i);
 				if (mapEntry.getString("host").equals("rtmp-api.facebook.com")) {
-					String oldEntryName = mapEntry.getString("entryName");
-					mapEntry.put("entryName", applicationName + "-facebook-" + System.currentTimeMillis());
-					mapEntry.put("streamName", newStreamKey);
-					mapEntry.put("sourceStreamName", sourceStreamName);
-					mapEntry.put("enabled", enableTarget);
-					log.info("new stream target json: " + mapEntry.toString());
-					WebResource createStreamTargetWebResource = client.resource(WOWZA_HOST + applicationName
-							+ "/pushpublish/mapentries/" + applicationName + "-facebook-" + System.currentTimeMillis());
-					ClientResponse createStreamTargetClientResponse = createStreamTargetWebResource
-							.accept("application/json").type("application/json")
-							.post(ClientResponse.class, mapEntry.toString());
-					String createStreamTargetResponseString = createStreamTargetClientResponse.getEntity(String.class);
-					log.info("stream target creation response: " + createStreamTargetResponseString);
-					JSONObject createStreamTargetResponseJson = new JSONObject(createStreamTargetResponseString);
-					if (createStreamTargetResponseJson.getBoolean("success")) {
+					try {
+						String oldEntryName = mapEntry.getString("entryName");
 						WebResource deleteStreamTargetWebResource = client
 								.resource(WOWZA_HOST + applicationName + "/pushpublish/mapentries/" + oldEntryName);
 						ClientResponse deleteStreamTargetResponseClientResponse = deleteStreamTargetWebResource
@@ -424,10 +469,13 @@ public class JournalManager {
 						log.info("stream target delete response: " + deleteStreamTargetResponseString);
 						JSONObject deleteStreamTargetResponseJson = new JSONObject(deleteStreamTargetResponseString);
 						if (deleteStreamTargetResponseJson.getBoolean("success")) {
-							log.info("stream target cycle success");
+							log.info("deleted fb stream target successfully" + oldEntryName);
 						} else {
-							log.info("stream target cycle failed");
+							log.info("not able to delete fb stream target" + oldEntryName);
 						}
+					} catch (Exception e) {
+						log.error(e);
+
 					}
 				}
 			}
@@ -511,6 +559,113 @@ public class JournalManager {
 					JSONObject createStreamTargetResponseJson = new JSONObject(createStreamTargetResponseString);
 					if (createStreamTargetResponseJson.getBoolean("success")) {
 						WebResource deleteStreamTargetWebResource = client
+								.resource(WOWZA_HOST + applicationName + "/pushpublish/mapentries/" + oldEntryName.trim());
+						ClientResponse deleteStreamTargetResponseClientResponse = deleteStreamTargetWebResource
+								.accept("application/json").type("application/json").delete(ClientResponse.class);
+						String deleteStreamTargetResponseString = deleteStreamTargetResponseClientResponse
+								.getEntity(String.class);
+						log.info("stream target delete response: " + deleteStreamTargetResponseString);
+						JSONObject deleteStreamTargetResponseJson = new JSONObject(deleteStreamTargetResponseString);
+						if (deleteStreamTargetResponseJson.getBoolean("success")) {
+							log.info("stream target cycle success");
+						} else {
+							log.info("stream target cycle failed");
+						}
+					}
+				}
+			}
+		}
+	}
+	
+	
+	/////////////////TODO: Deprecate this after new release//////////////////////////////////
+	public JournalLiveSettingsBean updateStreamKey(String destination, JournalLiveSettingsBean requestBean) {
+		JournalLiveSettingsBean settingsBean = new JournalLiveSettingsBean();
+		Session session = null;
+		Transaction transaction = null;
+		try {
+			session = sessionFactory.getCurrentSession();
+			transaction = session.beginTransaction();
+			Journal journal = (Journal) session.get("com.limitless.services.engage.journals.dao.Journal",
+					requestBean.getJournalId());
+			if (journal != null) {
+				Criteria criteria = session.createCriteria(JournalSetting.class);
+				Criterion jidCriterion = Restrictions.eq("journalId", requestBean.getJournalId());
+				Criterion isActive = Restrictions.eq("isActive", true);
+				LogicalExpression logExp = Restrictions.and(jidCriterion, isActive);
+				criteria.add(logExp);
+				List<JournalSetting> settingList = criteria.list();
+				log.info("setting list size: " + settingList.size());
+				if (settingList.size() == 1) {
+					for (JournalSetting setting : settingList) {
+						JournalSetting instance = (JournalSetting) session.get(
+								"com.limitless.services.engage.journals.dao.JournalSetting",
+								setting.getJournalSettingId());
+						if (destination.equals("fb")) {
+							instance.setFbStreamkey("");
+							session.update(instance);
+							settingsBean.setJournalId(requestBean.getJournalId());
+							wowzaFacebookStreamTargetUpdater(instance.getApplicationName(), instance.getStreamName(),
+									instance.getFbStreamkey(), requestBean.isFacebookEnabled());
+						} else if (destination.equals("yt")) {
+							instance.setYtStreamkey(requestBean.getNewYTStreamKey());
+							session.update(setting);
+							settingsBean.setJournalId(requestBean.getJournalId());
+							wowzaYoutubeStreamTargetUpdater(instance.getApplicationName(), instance.getStreamName(),
+									instance.getYtStreamkey(), requestBean.isYoutubeEnabled());
+						} else if (destination.equals("ps")) {
+							instance.setPsStreamkey(requestBean.getNewPSStreamKey());
+							session.update(setting);
+							settingsBean.setJournalId(requestBean.getJournalId());
+							wowzaPeriscopeStreamTargetUpdater(instance.getApplicationName(), instance.getStreamName(),
+									instance.getPsStreamkey(), requestBean.isPeriscopeEnabled());
+						}
+					}
+				}
+			}
+			transaction.commit();
+		} catch (RuntimeException re) {
+			if (transaction != null) {
+				transaction.rollback();
+			}
+			log.error("updating journal Live settings failed :" + re);
+		} finally {
+			if (session != null && session.isOpen()) {
+				session.close();
+			}
+		}
+		return settingsBean;
+	}
+	
+	public void wowzaFacebookStreamTargetUpdater(String applicationName, String sourceStreamName, String newStreamKey,
+			boolean enableTarget) {
+		WebResource webResource = client.resource(WOWZA_HOST + applicationName + "/pushpublish/mapentries");
+		ClientResponse clientResponse = webResource.accept("application/json").get(ClientResponse.class);
+		String stringResponse = clientResponse.getEntity(String.class);
+		log.info("wowza response: " + stringResponse);
+		JSONObject getStreamTargetJson = new JSONObject(stringResponse);
+		JSONArray existingStreamTargets = getStreamTargetJson.getJSONArray("mapEntries");
+		log.info("existing streams: " + existingStreamTargets);
+		if (existingStreamTargets.length() > 0) {
+			for (int i = 0; i < existingStreamTargets.length(); i++) {
+				JSONObject mapEntry = existingStreamTargets.getJSONObject(i);
+				if (mapEntry.getString("host").equals("rtmp-api.facebook.com")) {
+					String oldEntryName = mapEntry.getString("entryName");
+					mapEntry.put("entryName", applicationName + "-facebook-" + System.currentTimeMillis());
+					mapEntry.put("streamName", newStreamKey);
+					mapEntry.put("sourceStreamName", sourceStreamName);
+					mapEntry.put("enabled", enableTarget);
+					log.info("new stream target json: " + mapEntry.toString());
+					WebResource createStreamTargetWebResource = client.resource(WOWZA_HOST + applicationName
+							+ "/pushpublish/mapentries/" + applicationName + "-facebook-" + System.currentTimeMillis());
+					ClientResponse createStreamTargetClientResponse = createStreamTargetWebResource
+							.accept("application/json").type("application/json")
+							.post(ClientResponse.class, mapEntry.toString());
+					String createStreamTargetResponseString = createStreamTargetClientResponse.getEntity(String.class);
+					log.info("stream target creation response: " + createStreamTargetResponseString);
+					JSONObject createStreamTargetResponseJson = new JSONObject(createStreamTargetResponseString);
+					if (createStreamTargetResponseJson.getBoolean("success")) {
+						WebResource deleteStreamTargetWebResource = client
 								.resource(WOWZA_HOST + applicationName + "/pushpublish/mapentries/" + oldEntryName);
 						ClientResponse deleteStreamTargetResponseClientResponse = deleteStreamTargetWebResource
 								.accept("application/json").type("application/json").delete(ClientResponse.class);
@@ -528,4 +683,6 @@ public class JournalManager {
 			}
 		}
 	}
+	/////////////////TODO: Deprecate this after new release//////////////////////////////////
+	
 }

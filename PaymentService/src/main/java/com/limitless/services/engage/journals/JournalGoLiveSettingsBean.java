@@ -3,7 +3,7 @@ package com.limitless.services.engage.journals;
 import java.util.List;
 
 
-public class JournalLiveSettingsBean {
+public class JournalGoLiveSettingsBean {
 	private int journalId;
 	private int videoId;
 	// private String currentFBStreamKey;

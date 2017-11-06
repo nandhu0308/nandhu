@@ -15,6 +15,7 @@ import org.apache.log4j.Logger;
 import com.limitless.service.common.Message;
 import com.limitless.services.engage.journals.AuthResponseBean;
 import com.limitless.services.engage.journals.JournalBean;
+import com.limitless.services.engage.journals.JournalGoLiveSettingsBean;
 import com.limitless.services.engage.journals.JournalLiveSettingsBean;
 import com.limitless.services.engage.journals.JournalLoginRequestBean;
 import com.limitless.services.engage.journals.JournalLoginResponseBean;
@@ -123,7 +124,21 @@ public class JournalResource {
 		}
 		return getResponse(result);
 	}
-
+	@Path("/channel/golive/{destination}")
+	@PUT
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response goLive(@PathParam("destination") String destination, JournalGoLiveSettingsBean requestBean) {
+		boolean result = false;
+		try {
+			JournalManager manager = new JournalManager();
+			manager.updateGoLiveSettings(destination, requestBean);
+			result = true;
+		} catch (Exception e) {
+			logger.error("API Error", e);
+		}
+		return getResponse(result);
+	}
 	private Response getResponse(boolean result) {
 		return result ? Response.status(200).build() : Response.status(404).build();
 	}
