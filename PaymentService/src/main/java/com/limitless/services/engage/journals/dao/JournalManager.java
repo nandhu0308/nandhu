@@ -602,7 +602,7 @@ public class JournalManager {
 								"com.limitless.services.engage.journals.dao.JournalSetting",
 								setting.getJournalSettingId());
 						if (destination.equals("fb")) {
-							instance.setFbStreamkey("");
+							instance.setFbStreamkey(requestBean.getNewFBStreamKey());
 							session.update(instance);
 							settingsBean.setJournalId(requestBean.getJournalId());
 							wowzaFacebookStreamTargetUpdater(instance.getApplicationName(), instance.getStreamName(),
