@@ -1,49 +1,19 @@
 package com.limitless.services.engage.journals;
 
-import java.util.List;
-
-
 public class JournalLiveSettingsBean {
 	private int journalId;
 	private int videoId;
-	// private String currentFBStreamKey;
-	// private String newFBStreamKey;
-	private List<String> fbStreamKeys;
-	private String fbPageNames;
+	private String currentFBStreamKey;
+	private String newFBStreamKey;
 	private String currentYTStreamKey;
 	private String newYTStreamKey;
 	private String currentHAStreamKey;
 	private String newHAStreamKey;
 	private String currentPSStreamKey;
 	private String newPSStreamKey;
-//	private String fbPageId;
+	private String fbPageId;
 	private boolean youtubeEnabled = false, facebookEnabled = false, periscopeEnabled = false;
-
 	
-	public List<String> getFbStreamKeys() {
-		return fbStreamKeys;
-	}
-
-	public void setFbStreamKeys(List<String> fbStreamKeys) {
-		this.fbStreamKeys = fbStreamKeys;
-	}
-
-	public String getFbPageNames() {
-		return fbPageNames;
-	}
-
-	public void setFbPageNames(String fbPageNames) {
-		this.fbPageNames = fbPageNames;
-	}
-
-	public String getCommaSeparatedFbStreamKeys() {
-		String result = "";
-		if (fbStreamKeys != null && fbStreamKeys.size() > 0) {
-			result = String.join(",", fbStreamKeys);
-		}
-
-		return result;
-	}
 
 	public boolean isYoutubeEnabled() {
 		return youtubeEnabled;
@@ -69,13 +39,13 @@ public class JournalLiveSettingsBean {
 		this.periscopeEnabled = periscopeEnabled;
 	}
 
-//	public String getFbPageId() {
-//		return fbPageId;
-//	}
-//
-//	public void setFbPageId(String fbPageId) {
-//		this.fbPageId = fbPageId;
-//	}
+	public String getFbPageId() {
+		return fbPageId;
+	}
+
+	public void setFbPageId(String fbPageId) {
+		this.fbPageId = fbPageId;
+	}
 
 	public int getJournalId() {
 		return journalId;
@@ -93,21 +63,21 @@ public class JournalLiveSettingsBean {
 		this.videoId = videoId;
 	}
 
-	// public String getCurrentFBStreamKey() {
-	// return currentFBStreamKey;
-	// }
-	//
-	// public void setCurrentFBStreamKey(String currentFBStreamKey) {
-	// this.currentFBStreamKey = currentFBStreamKey;
-	// }
-	//
-	// public String getNewFBStreamKey() {
-	// return newFBStreamKey;
-	// }
-	//
-	// public void setNewFBStreamKey(String newFBStreamKey) {
-	// this.newFBStreamKey = newFBStreamKey;
-	// }
+	public String getCurrentFBStreamKey() {
+		return currentFBStreamKey;
+	}
+
+	public void setCurrentFBStreamKey(String currentFBStreamKey) {
+		this.currentFBStreamKey = currentFBStreamKey;
+	}
+
+	public String getNewFBStreamKey() {
+		return newFBStreamKey;
+	}
+
+	public void setNewFBStreamKey(String newFBStreamKey) {
+		this.newFBStreamKey = newFBStreamKey;
+	}
 
 	public String getCurrentYTStreamKey() {
 		return currentYTStreamKey;

@@ -231,7 +231,7 @@ public class JournalSetting {
 	}
 
 	public String getApplicationName() {
-		return applicationName.trim();
+		return applicationName;
 	}
 
 	public void setApplicationName(String applicationName) {
@@ -239,7 +239,7 @@ public class JournalSetting {
 	}
 
 	public String getHostURL() {
-		return hostURL.trim();
+		return hostURL;
 	}
 
 	public void setHostURL(String hostURL) {
@@ -247,7 +247,7 @@ public class JournalSetting {
 	}
 
 	public String getHostPort() {
-		return hostPort.trim();
+		return hostPort;
 	}
 
 	public void setHostPort(String hostPort) {
@@ -255,7 +255,7 @@ public class JournalSetting {
 	}
 
 	public String getStreamName() {
-		return streamName.trim();
+		return streamName;
 	}
 
 	public void setStreamName(String streamName) {
