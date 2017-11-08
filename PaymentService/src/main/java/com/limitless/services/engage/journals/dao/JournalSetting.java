@@ -82,9 +82,19 @@ public class JournalSetting {
 	@Column(name = "ENABLE_SOCIAL_MEDIA", nullable = false, columnDefinition = "TINYINT(1)")
 	private boolean enableSocialMedia;	
 	private String fb_page_names;
-	
+	@Column(name = "IMEI_FILTER_ENABLED", nullable = false, columnDefinition = "TINYINT(1)")
+	private boolean imeiFilterEnabled;
 
 	
+	
+	public boolean isImeiFilterEnabled() {
+		return imeiFilterEnabled;
+	}
+
+	public void setImeiFilterEnabled(boolean imeiFilterEnabled) {
+		this.imeiFilterEnabled = imeiFilterEnabled;
+	}
+
 	public String getFb_page_names() {
 		return fb_page_names;
 	}

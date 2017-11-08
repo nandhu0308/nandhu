@@ -167,7 +167,7 @@ public class JournalManager {
 						settingBean.setVideoFrameHeight(setting.getVideo_frame_height());
 						settingBean.setAbr(setting.isAbr());
 						settingBean.setEnableSocialMedia(setting.isEnableSocialMedia());
-						if (journal.getJournalEmail().equalsIgnoreCase("test@haappyapp.com")
+						if (!setting.isImeiFilterEnabled()
 								|| (journalDevicesList != null && journalDevicesList.size() > 0))
 							responseBean.setJournalSetting(settingBean);
 						liveSettingsBean.setJournalId(journal.getJournalId());
