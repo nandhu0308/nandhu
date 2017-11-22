@@ -25,6 +25,7 @@ import com.limitless.services.engage.dao.EngageSellerManager;
 import com.limitless.services.engage.entertainment.AdRollBean;
 import com.limitless.services.engage.entertainment.AlbumBean;
 import com.limitless.services.engage.entertainment.AlbumVideoRequestBean;
+import com.limitless.services.engage.entertainment.ApplicationChannelRequestBean;
 import com.limitless.services.engage.entertainment.BroadcasterAlbumCategoryResponseBean;
 import com.limitless.services.engage.entertainment.BroadcasterAlbumCategoryRequestBean;
 import com.limitless.services.engage.entertainment.BroadcasterChannelCategoryResponseBean;
@@ -1180,6 +1181,42 @@ public class BroadcasterManager {
 			}
 		}
 		return responseBean;
+
+	}
+
+	public int getBroadcasterChannelIdFromApplicationName(ApplicationChannelRequestBean requestBean) {
+		log.debug("getting channel Id");
+		int channelId = 0;
+		Session session = null;
+		Transaction transaction = null;
+		try {
+			session = sessionFactory.getCurrentSession();
+			transaction = session.beginTransaction();
+			Criteria criteria = session.createCriteria(Channel.class);
+			criteria.add(Restrictions.eq("wowzaApplicationName", requestBean.getApplicationName()));
+			criteria.add(Restrictions.eq("deprecated", false));
+			criteria.add(Restrictions.eq("isActive", true));
+			List<Channel> channelList = criteria.list();
+			log.debug("Channel size : " + channelList.size());
+			if (channelList.size() > 0) {
+				Channel channel = channelList.get(0);
+				channelId = channel.getChannelId();
+			}
+			transaction.commit();
+		} catch (
+
+		RuntimeException re) {
+			if (transaction != null) {
+				transaction.rollback();
+			}
+			log.error("getting channels failed : " + re);
+			throw re;
+		} finally {
+			if (session != null && session.isOpen()) {
+				session.close();
+			}
+		}
+		return channelId;
 
 	}
 

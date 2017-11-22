@@ -17,6 +17,8 @@ import org.apache.log4j.Logger;
 
 import com.limitless.services.engage.entertainment.AlbumBean;
 import com.limitless.services.engage.entertainment.AlbumVideoRequestBean;
+import com.limitless.services.engage.entertainment.ApplicationChannelRequestBean;
+import com.limitless.services.engage.entertainment.ApplicationChannelResponseBean;
 import com.limitless.services.engage.entertainment.BroadcasterAlbumCategoryRequestBean;
 import com.limitless.services.engage.entertainment.BroadcasterAlbumCategoryResponseBean;
 import com.limitless.services.engage.entertainment.BroadcasterChannelCategoryResponseBean;
@@ -279,6 +281,27 @@ public class BroadcasterResource {
 			responseBean = null;
 		}
 		if (responseBean != null) {
+			return Response.status(200).entity(responseBean).build();
+		}
+		return Response.status(404).build();
+	}
+
+	@Path("application/channel")
+	@POST
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response getChannel(ApplicationChannelRequestBean requestBean) throws Exception {
+		int channelId = 0;
+		try {
+			BroadcasterManager manager = new BroadcasterManager();
+			channelId = manager.getBroadcasterChannelIdFromApplicationName(requestBean);
+		} catch (Exception e) {
+			logger.error("API Error", e);
+
+		}
+		if (channelId > 0) {
+			ApplicationChannelResponseBean responseBean = new ApplicationChannelResponseBean();
+			responseBean.setChannelId(channelId);
 			return Response.status(200).entity(responseBean).build();
 		}
 		return Response.status(404).build();

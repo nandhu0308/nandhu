@@ -66,7 +66,9 @@ public class Channel {
 	private Integer languageId;
 	@Column(name = "deprecated")
 	private boolean deprecated;
-
+	@Column(name = "W_APPLICATION_NAME")
+	private String wowzaApplicationName;
+	
 	private List<ChannelVideo> videos;
 
 	@Access(AccessType.PROPERTY)
@@ -81,6 +83,14 @@ public class Channel {
 
 	public void setVideos(List<ChannelVideo> videos) {
 		this.videos = videos;
+	}
+
+	public String getWowzaApplicationName() {
+		return wowzaApplicationName;
+	}
+
+	public void setWowzaApplicationName(String wowzaApplicationName) {
+		this.wowzaApplicationName = wowzaApplicationName;
 	}
 
 	public boolean isDeprecated() {
