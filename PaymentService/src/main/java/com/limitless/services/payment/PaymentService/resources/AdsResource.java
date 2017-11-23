@@ -40,8 +40,8 @@ public class AdsResource {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
-	public AssignLogoAdBean getLogoAdByEvent (@PathParam("eventId") int eventId) throws Exception{
-		AssignLogoAdBean logoAdBean = new AssignLogoAdBean();
+	public List<AssignLogoAdBean> getLogoAdByEvent (@PathParam("eventId") int eventId) throws Exception{
+		List<AssignLogoAdBean> logoAdBean = new ArrayList<AssignLogoAdBean>();
 		try {
 			AdsManager manager = new AdsManager();
 			logoAdBean = manager.getLogoAd(eventId);

@@ -81,8 +81,8 @@ public class AdsManager {
 		return eventList;
 	}
 
-	public AssignLogoAdBean getLogoAd(int eventId) throws Exception {
-		AssignLogoAdBean logoAdBean = new AssignLogoAdBean();
+	public List<AssignLogoAdBean> getLogoAd(int eventId) throws Exception {
+		List<AssignLogoAdBean> logoAdsList = new ArrayList<AssignLogoAdBean>();
 		Session session = null;
 		Transaction transaction = null;
 		try {
@@ -93,10 +93,10 @@ public class AdsManager {
 				String today = events.getDate();
 				Criteria criteria = session.createCriteria(AssignLogoAds.class);
 				criteria.add(Restrictions.eq("adEventId", eventId));
-				List<AssignLogoAds> logoAdsList = criteria.list();
-				log.info("logo ads size : " + logoAdsList.size());
-				if (logoAdsList.size() > 0) {
-					for (AssignLogoAds logoAds : logoAdsList) {
+				List<AssignLogoAds> assignLogoAdsList = criteria.list();
+				log.info("logo ads size : " + assignLogoAdsList.size());
+				if (assignLogoAdsList.size() > 0) {
+					for (AssignLogoAds logoAds : assignLogoAdsList) {
 						String startTimeString = today +" "+logoAds.getTimeSlotStart();
 						String endTimeString = today +" "+logoAds.getTimeSlotEnd();
 						SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
@@ -106,6 +106,7 @@ public class AdsManager {
 						String currentTimeString = sdf.format(date);
 						Date currentTime = sdf.parse(currentTimeString);
 						if(startTime.equals(currentTime) || startTime.before(currentTime)) {
+							AssignLogoAdBean logoAdBean = new AssignLogoAdBean();
 							logoAdBean.setAdEventId(eventId);
 							logoAdBean.setAdPlacement(logoAds.getAdPlacement());
 							logoAdBean.setAdTarget(logoAds.getAdTarget());
@@ -117,6 +118,8 @@ public class AdsManager {
 							logoAdBean.setImgName(logoAds.getImgName());
 							logoAdBean.setLowerText(logoAds.getLowerText());
 							logoAdBean.setStreamSource(logoAds.getStreamSource());
+							logoAdsList.add(logoAdBean);
+							logoAdBean = null;
 						}
 					}
 				}
@@ -133,6 +136,6 @@ public class AdsManager {
 				session.close();
 			}
 		}
-		return logoAdBean;
+		return logoAdsList;
 	}
 }
