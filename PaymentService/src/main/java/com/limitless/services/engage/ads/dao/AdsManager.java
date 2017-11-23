@@ -114,6 +114,9 @@ public class AdsManager {
 							logoAdBean.setLogoFtpPath(logoAds.getLogoFtpPath());
 							logoAdBean.setTimeSlotStart(logoAds.getTimeSlotStart());
 							logoAdBean.setTimeSlotEnd(logoAds.getTimeSlotEnd());
+							logoAdBean.setImgName(logoAds.getImgName());
+							logoAdBean.setLowerText(logoAds.getLowerText());
+							logoAdBean.setStreamSource(logoAds.getStreamSource());
 						}
 					}
 				}

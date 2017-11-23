@@ -11,6 +11,9 @@ public class AssignLogoAdBean {
 	private String geoXCoordinate;
 	private String geoYCoordinate;
 	private String logoFtpPath;
+	private String imgName;
+	private String streamSource;
+	private String lowerText;
 	public int getId() {
 		return id;
 	}
@@ -70,5 +73,23 @@ public class AssignLogoAdBean {
 	}
 	public void setLogoFtpPath(String logoFtpPath) {
 		this.logoFtpPath = logoFtpPath;
+	}
+	public String getImgName() {
+		return imgName;
+	}
+	public void setImgName(String imgName) {
+		this.imgName = imgName;
+	}
+	public String getStreamSource() {
+		return streamSource;
+	}
+	public void setStreamSource(String streamSource) {
+		this.streamSource = streamSource;
+	}
+	public String getLowerText() {
+		return lowerText;
+	}
+	public void setLowerText(String lowerText) {
+		this.lowerText = lowerText;
 	}
 }

@@ -31,6 +31,12 @@ public class AssignLogoAds {
 	private String geoYCoordinate;
 	@Column(name="LOGO_FTP_PATH")
 	private String logoFtpPath;
+	@Column(name="IMG_NAME")
+	private String imgName;
+	@Column(name="STREAM_SOURCE")
+	private String streamSource;
+	@Column(name="LOWER_TEXT")
+	private String lowerText;
 	public Integer getId() {
 		return id;
 	}
@@ -90,5 +96,23 @@ public class AssignLogoAds {
 	}
 	public void setLogoFtpPath(String logoFtpPath) {
 		this.logoFtpPath = logoFtpPath;
+	}
+	public String getImgName() {
+		return imgName;
+	}
+	public void setImgName(String imgName) {
+		this.imgName = imgName;
+	}
+	public String getStreamSource() {
+		return streamSource;
+	}
+	public void setStreamSource(String streamSource) {
+		this.streamSource = streamSource;
+	}
+	public String getLowerText() {
+		return lowerText;
+	}
+	public void setLowerText(String lowerText) {
+		this.lowerText = lowerText;
 	}
 }
