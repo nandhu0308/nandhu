@@ -97,15 +97,15 @@ public class AdsManager {
 				log.info("logo ads size : " + assignLogoAdsList.size());
 				if (assignLogoAdsList.size() > 0) {
 					for (AssignLogoAds logoAds : assignLogoAdsList) {
-						String startTimeString = today +" "+logoAds.getTimeSlotStart();
-						String endTimeString = today +" "+logoAds.getTimeSlotEnd();
+						String startTimeString = today + " " + logoAds.getTimeSlotStart();
+						String endTimeString = today + " " + logoAds.getTimeSlotEnd();
 						SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 						Date startTime = sdf.parse(startTimeString);
 						Date endTime = sdf.parse(endTimeString);
 						Date date = new Date();
 						String currentTimeString = sdf.format(date);
 						Date currentTime = sdf.parse(currentTimeString);
-						if(startTime.equals(currentTime)) {
+						if (currentTime.getTime() >= startTime.getTime() && currentTime.getTime() < endTime.getTime()) {
 							AssignLogoAdBean logoAdBean = new AssignLogoAdBean();
 							logoAdBean.setAdEventId(eventId);
 							logoAdBean.setAdPlacement(logoAds.getAdPlacement());
