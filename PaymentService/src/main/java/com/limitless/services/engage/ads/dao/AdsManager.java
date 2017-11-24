@@ -105,7 +105,7 @@ public class AdsManager {
 						Date date = new Date();
 						String currentTimeString = sdf.format(date);
 						Date currentTime = sdf.parse(currentTimeString);
-						if(startTime.equals(currentTime) || endTime.after(currentTime)) {
+						if(startTime.equals(currentTime)) {
 							AssignLogoAdBean logoAdBean = new AssignLogoAdBean();
 							logoAdBean.setAdEventId(eventId);
 							logoAdBean.setAdPlacement(logoAds.getAdPlacement());
