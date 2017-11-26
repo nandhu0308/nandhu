@@ -5,6 +5,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -28,6 +29,13 @@ public class AdsManager {
 	Client client = RestClientUtil.createClient();
 	private final SessionFactory sessionFactory = HibernateUtil.getSessionFactory();
 
+	public TimeZone getIndianTimeZone() {
+		TimeZone indianTimeZone = TimeZone.getTimeZone("Asia/Kolkata");
+		if (indianTimeZone == null)
+			indianTimeZone = TimeZone.getTimeZone("Asia/Calcutta");
+		return indianTimeZone;
+	}
+
 	public List<AdEventsBean> getAdEventByChannel(int channelId) throws Exception {
 		List<AdEventsBean> eventList = new ArrayList<AdEventsBean>();
 		Session session = null;
@@ -37,6 +45,7 @@ public class AdsManager {
 			transaction = session.beginTransaction();
 
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+			sdf.setTimeZone(getIndianTimeZone());
 			Date date = new Date();
 			log.info(date);
 			String today = sdf.format(date);
@@ -100,11 +109,14 @@ public class AdsManager {
 						String startTimeString = today + " " + logoAds.getTimeSlotStart();
 						String endTimeString = today + " " + logoAds.getTimeSlotEnd();
 						SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+						sdf.setTimeZone(getIndianTimeZone());
 						Date startTime = sdf.parse(startTimeString);
 						Date endTime = sdf.parse(endTimeString);
 						Date date = new Date();
 						String currentTimeString = sdf.format(date);
 						Date currentTime = sdf.parse(currentTimeString);
+						log.info("StartTime: " + startTime + " # EndTime: " + endTime + " # CurrentTime: "
+								+ currentTime);
 						if (currentTime.getTime() >= startTime.getTime() && currentTime.getTime() < endTime.getTime()) {
 							AssignLogoAdBean logoAdBean = new AssignLogoAdBean();
 							logoAdBean.setAdEventId(eventId);

@@ -123,22 +123,22 @@ public class BroadcasterResource {
 		return albumBean;
 	}
 
-	@Path("/video/pagelist/{albumId}/{videoId}")
-	@GET
-	@Consumes(MediaType.APPLICATION_JSON)
-	@Produces(MediaType.APPLICATION_JSON)
-	public AlbumBean getAlbumVideoList(@PathParam("albumId") int albumId, @PathParam("videoId") int videoId)
-			throws Exception {
-		AlbumBean albumBean = new AlbumBean();
-		try {
-			BroadcasterManager manager = new BroadcasterManager();
-			albumBean = manager.getBroadcasterAlbumVideoList(albumId, videoId, 0, false);
-		} catch (Exception e) {
-			logger.error("API Error", e);
-			throw new Exception("Internal Server Error");
-		}
-		return albumBean;
-	}
+//	@Path("/video/pagelist/{albumId}/{videoId}")
+//	@GET
+//	@Consumes(MediaType.APPLICATION_JSON)
+//	@Produces(MediaType.APPLICATION_JSON)
+//	public AlbumBean getAlbumVideoList(@PathParam("albumId") int albumId, @PathParam("videoId") int videoId)
+//			throws Exception {
+//		AlbumBean albumBean = new AlbumBean();
+//		try {
+//			BroadcasterManager manager = new BroadcasterManager();
+//			albumBean = manager.getBroadcasterAlbumVideoList(albumId, videoId, 0, false);
+//		} catch (Exception e) {
+//			logger.error("API Error", e);
+//			throw new Exception("Internal Server Error");
+//		}
+//		return albumBean;
+//	}
 
 	@Path("/video/get")
 	@POST
