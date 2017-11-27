@@ -36,8 +36,8 @@ public class AdsManager {
 		return indianTimeZone;
 	}
 
-	public List<AdEventsBean> getAdEventByChannel(int channelId) throws Exception {
-		List<AdEventsBean> eventList = new ArrayList<AdEventsBean>();
+	public AdEventsBean getAdEventByChannel(int channelId) throws Exception {
+		AdEventsBean eventBean = new AdEventsBean();
 		Session session = null;
 		Transaction transaction = null;
 		try {
@@ -49,10 +49,7 @@ public class AdsManager {
 			Date date = new Date();
 			log.info(date);
 			String today = sdf.format(date);
-			// String currentTimeString = sdf.format(date);
-			// Date currentTime = sdf.parse(currentTimeString);
-			// log.info(currentTime);
-
+			
 			Criteria criteria = session.createCriteria(AdEvents.class);
 			Junction conditionGrp = Restrictions.conjunction().add(Restrictions.eq("date", today))
 					.add(Restrictions.eq("channelId", channelId)).add(Restrictions.eq("isActive", true));
@@ -61,20 +58,29 @@ public class AdsManager {
 			log.info("ad event list: " + adEventList.size());
 			if (adEventList.size() > 0) {
 				for (AdEvents adEvent : adEventList) {
-					AdEventsBean bean = new AdEventsBean();
-					bean.setActive(adEvent.isActive());
-					bean.setAdWindowTime(adEvent.getAdWindowTime());
-					bean.setChannelId(adEvent.getChannelId());
-					bean.setDate(adEvent.getDate().toString());
-					bean.setDuration(adEvent.getDuration());
-					bean.setAdType(adEvent.getAdType());
-					bean.setEndTime(adEvent.getEndTime());
-					bean.setEventName(adEvent.getEventName());
-					bean.setEventType(adEvent.getEventType());
-					bean.setId(adEvent.getId());
-					bean.setStartTime(adEvent.getStartTime());
-					eventList.add(bean);
-					bean = null;
+					String eventStartTimeString = today + " " + adEvent.getStartTime();
+					String eventEndTimeString = today + " " + adEvent.getEndTime();
+					SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+					sdf2.setTimeZone(getIndianTimeZone());
+					Date eventStartTime = sdf2.parse(eventStartTimeString);
+					Date eventEndTime = sdf2.parse(eventEndTimeString);
+					Date date2 = new Date();
+					String currentTimeString = sdf2.format(date2);
+					Date currentTime = sdf2.parse(currentTimeString);
+					log.info("StartTime: " + eventStartTime + " # EndTime: " + eventEndTime + " # CurrentTime: "
+							+ currentTime);
+					if(currentTime.getTime() >= eventStartTime.getTime() && currentTime.getTime() < eventEndTime.getTime()) {
+						eventBean.setActive(adEvent.isActive());
+						eventBean.setAdWindowTime(adEvent.getAdWindowTime());
+						eventBean.setChannelId(adEvent.getChannelId());
+						eventBean.setDate(adEvent.getDate().toString());
+						eventBean.setDuration(adEvent.getDuration());
+						eventBean.setEndTime(adEvent.getEndTime());
+						eventBean.setEventName(adEvent.getEventName());
+						eventBean.setEventType(adEvent.getEventType());
+						eventBean.setId(adEvent.getId());
+						eventBean.setStartTime(adEvent.getStartTime());
+					}
 				}
 			}
 			transaction.commit();
@@ -89,7 +95,7 @@ public class AdsManager {
 				session.close();
 			}
 		}
-		return eventList;
+		return eventBean;
 	}
 
 	public List<AssignLogoAdBean> getLogoAd(int eventId) throws Exception {
@@ -132,6 +138,7 @@ public class AdsManager {
 							logoAdBean.setImgName(logoAds.getImgName());
 							logoAdBean.setLowerText(logoAds.getLowerText());
 							logoAdBean.setStreamSource(logoAds.getStreamSource());
+							logoAdBean.setAdType(logoAds.getAdType());
 							logoAdsList.add(logoAdBean);
 							logoAdBean = null;
 						}

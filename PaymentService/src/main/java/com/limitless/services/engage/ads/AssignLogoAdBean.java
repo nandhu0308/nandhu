@@ -10,6 +10,7 @@ public class AssignLogoAdBean {
 	private String adTarget;
 	private String geoXCoordinate;
 	private String geoYCoordinate;
+	private String adType;
 	private String logoFtpPath;
 	private String imgName;
 	private String streamSource;
@@ -91,5 +92,11 @@ public class AssignLogoAdBean {
 	}
 	public void setLowerText(String lowerText) {
 		this.lowerText = lowerText;
+	}
+	public String getAdType() {
+		return adType;
+	}
+	public void setAdType(String adType) {
+		this.adType = adType;
 	}
 }

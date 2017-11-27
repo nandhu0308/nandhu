@@ -24,16 +24,16 @@ public class AdsResource {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
-	public List<AdEventsBean> getAdEventByChannel (@PathParam("channelId") int channelId) throws Exception{
-		List<AdEventsBean> eventsList = new ArrayList<AdEventsBean>();
+	public AdEventsBean getAdEventByChannel (@PathParam("channelId") int channelId) throws Exception{
+		AdEventsBean eventsBean = new AdEventsBean();
 		try {
 			AdsManager manager = new AdsManager();
-			eventsList = manager.getAdEventByChannel(channelId);
+			eventsBean = manager.getAdEventByChannel(channelId);
 		} catch(Exception e) {
 			logger.error("API Error", e);
 			throw new Exception("Internal Server Error");
 		}
-		return eventsList;
+		return eventsBean;
 	}
 	
 	@Path("/get/logo/event/{eventId}")

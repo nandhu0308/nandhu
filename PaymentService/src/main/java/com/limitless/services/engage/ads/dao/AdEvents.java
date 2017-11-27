@@ -28,8 +28,6 @@ public class AdEvents {
 	private Integer duration;
 	@Column(name="DATE")
 	private String date;
-	@Column(name="AD_TYPE")
-	private String adType;
 	@Column(name="START_TIME")
 	private String startTime;
 	@Column(name="END_TIME")
@@ -131,11 +129,5 @@ public class AdEvents {
 	}
 	public void setUpdatedOn(Date updatedOn) {
 		this.updatedOn = updatedOn;
-	}
-	public String getAdType() {
-		return adType;
-	}
-	public void setAdType(String adType) {
-		this.adType = adType;
 	}
 }

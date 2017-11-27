@@ -29,6 +29,8 @@ public class AssignLogoAds {
 	private String geoXCoordinate;
 	@Column(name="GEO_Y_COORDINATE")
 	private String geoYCoordinate;
+	@Column(name="AD_TYPE")
+	private String adType;
 	@Column(name="LOGO_FTP_PATH")
 	private String logoFtpPath;
 	@Column(name="IMG_NAME")
@@ -114,5 +116,11 @@ public class AssignLogoAds {
 	}
 	public void setLowerText(String lowerText) {
 		this.lowerText = lowerText;
+	}
+	public String getAdType() {
+		return adType;
+	}
+	public void setAdType(String adType) {
+		this.adType = adType;
 	}
 }

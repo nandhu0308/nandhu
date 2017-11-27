@@ -8,7 +8,6 @@ public class AdEventsBean {
 	private String eventName;
 	private String eventType;
 	private int duration;
-	private String adType;
 	private String date;
 	private String startTime;
 	private String endTime;
@@ -73,11 +72,5 @@ public class AdEventsBean {
 	}
 	public void setChannelId(int channelId) {
 		this.channelId = channelId;
-	}
-	public String getAdType() {
-		return adType;
-	}
-	public void setAdType(String adType) {
-		this.adType = adType;
 	}
 }
