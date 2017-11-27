@@ -64,8 +64,10 @@ public class AdsManager {
 					AdEventsBean bean = new AdEventsBean();
 					bean.setActive(adEvent.isActive());
 					bean.setAdWindowTime(adEvent.getAdWindowTime());
+					bean.setChannelId(adEvent.getChannelId());
 					bean.setDate(adEvent.getDate().toString());
 					bean.setDuration(adEvent.getDuration());
+					bean.setAdType(adEvent.getAdType());
 					bean.setEndTime(adEvent.getEndTime());
 					bean.setEventName(adEvent.getEventName());
 					bean.setEventType(adEvent.getEventType());
