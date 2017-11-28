@@ -9,6 +9,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import org.apache.log4j.Logger;
 
@@ -19,33 +20,33 @@ import com.limitless.services.engage.ads.dao.AdsManager;
 @Path("/ads")
 public class AdsResource {
 	final static Logger logger = Logger.getLogger(AdsResource.class);
-	
+
 	@Path("/get/event/channel/{channelId}")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
-	public AdEventsBean getAdEventByChannel (@PathParam("channelId") int channelId) throws Exception{
+	public Response getAdEventByChannel(@PathParam("channelId") int channelId) throws Exception {
 		AdEventsBean eventsBean = new AdEventsBean();
 		try {
 			AdsManager manager = new AdsManager();
 			eventsBean = manager.getAdEventByChannel(channelId);
-		} catch(Exception e) {
+		} catch (Exception e) {
 			logger.error("API Error", e);
-			throw new Exception("Internal Server Error");
 		}
-		return eventsBean;
+		return eventsBean != null ? Response.status(200).entity(eventsBean).build() : Response.status(404).build();
+
 	}
-	
+
 	@Path("/get/logo/event/{eventId}")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
-	public List<AssignLogoAdBean> getLogoAdByEvent (@PathParam("eventId") int eventId) throws Exception{
+	public List<AssignLogoAdBean> getLogoAdByEvent(@PathParam("eventId") int eventId) throws Exception {
 		List<AssignLogoAdBean> logoAdBean = new ArrayList<AssignLogoAdBean>();
 		try {
 			AdsManager manager = new AdsManager();
 			logoAdBean = manager.getLogoAd(eventId);
-		} catch(Exception e) {
+		} catch (Exception e) {
 			logger.error("API Error", e);
 			throw new Exception("Internal Server Error");
 		}

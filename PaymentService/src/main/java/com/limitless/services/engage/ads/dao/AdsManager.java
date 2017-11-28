@@ -37,7 +37,7 @@ public class AdsManager {
 	}
 
 	public AdEventsBean getAdEventByChannel(int channelId) throws Exception {
-		AdEventsBean eventBean = new AdEventsBean();
+		AdEventsBean eventBean = null;
 		Session session = null;
 		Transaction transaction = null;
 		try {
@@ -49,14 +49,14 @@ public class AdsManager {
 			Date date = new Date();
 			log.info(date);
 			String today = sdf.format(date);
-			
+
 			Criteria criteria = session.createCriteria(AdEvents.class);
 			Junction conditionGrp = Restrictions.conjunction().add(Restrictions.eq("date", today))
 					.add(Restrictions.eq("channelId", channelId)).add(Restrictions.eq("isActive", true));
 			criteria.add(conditionGrp);
 			List<AdEvents> adEventList = criteria.list();
 			log.info("ad event list: " + adEventList.size());
-			if (adEventList.size() > 0) {
+			if (adEventList.size() > 0) {				
 				for (AdEvents adEvent : adEventList) {
 					String eventStartTimeString = today + " " + adEvent.getStartTime();
 					String eventEndTimeString = today + " " + adEvent.getEndTime();
@@ -69,7 +69,9 @@ public class AdsManager {
 					Date currentTime = sdf2.parse(currentTimeString);
 					log.info("StartTime: " + eventStartTime + " # EndTime: " + eventEndTime + " # CurrentTime: "
 							+ currentTime);
-					if(currentTime.getTime() >= eventStartTime.getTime() && currentTime.getTime() < eventEndTime.getTime()) {
+					if (currentTime.getTime() >= eventStartTime.getTime()
+							&& currentTime.getTime() < eventEndTime.getTime()) {
+						eventBean = new AdEventsBean();
 						eventBean.setActive(adEvent.isActive());
 						eventBean.setAdWindowTime(adEvent.getAdWindowTime());
 						eventBean.setChannelId(adEvent.getChannelId());
