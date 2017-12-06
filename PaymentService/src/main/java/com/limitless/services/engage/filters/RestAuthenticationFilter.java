@@ -31,7 +31,7 @@ public class RestAuthenticationFilter implements Filter {
 			HttpServletRequest httpRequest = (HttpServletRequest) request;
 			String path = httpRequest.getRequestURI().substring(httpRequest.getContextPath().length());
 
-			logger.info("Path: " + path);
+			logger.debug("Path: " + path);
 
 			boolean authenticationStatus = false;
 			if (path.contains("getVersion") || path.contains("selfinvite") || path.contains("seller/register")) {

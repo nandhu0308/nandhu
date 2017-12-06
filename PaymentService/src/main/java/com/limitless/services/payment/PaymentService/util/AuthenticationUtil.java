@@ -47,7 +47,7 @@ public class AuthenticationUtil {
 		final int userId = Integer.parseInt(tokenizer.nextToken());
 		final String password = tokenizer.nextToken();
 
-		logger.info(userId + " : " + password);
+		logger.debug(userId + " : " + password);
 
 		// tbd - pass it as environment variable
 		if (isAdmin) {
@@ -79,7 +79,7 @@ public class AuthenticationUtil {
 			}
 			if (sessionKey != null) {
 				String sessionKeyString = new String(sessionKeyBytes);
-				logger.info("Token : " + sessionKeyString);
+				logger.debug("Token : " + sessionKeyString);
 				StringTokenizer tokenizer = new StringTokenizer(sessionKeyString, ".");
 				int sessionId = Integer.parseInt(tokenizer.nextToken());
 				String sessionToken = tokenizer.nextToken();

@@ -47,15 +47,14 @@ public class AdsManager {
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 			sdf.setTimeZone(getIndianTimeZone());
 			Date date = new Date();
-			log.info(date);
+	
 			String today = sdf.format(date);
 
 			Criteria criteria = session.createCriteria(AdEvents.class);
 			Junction conditionGrp = Restrictions.conjunction().add(Restrictions.eq("date", today))
 					.add(Restrictions.eq("channelId", channelId)).add(Restrictions.eq("isActive", true));
 			criteria.add(conditionGrp);
-			List<AdEvents> adEventList = criteria.list();
-			log.info("ad event list: " + adEventList.size());
+			List<AdEvents> adEventList = criteria.list();		
 			if (adEventList.size() > 0) {				
 				for (AdEvents adEvent : adEventList) {
 					String eventStartTimeString = today + " " + adEvent.getStartTime();
@@ -66,9 +65,7 @@ public class AdsManager {
 					Date eventEndTime = sdf2.parse(eventEndTimeString);
 					Date date2 = new Date();
 					String currentTimeString = sdf2.format(date2);
-					Date currentTime = sdf2.parse(currentTimeString);
-					log.info("StartTime: " + eventStartTime + " # EndTime: " + eventEndTime + " # CurrentTime: "
-							+ currentTime);
+					Date currentTime = sdf2.parse(currentTimeString);					
 					if (currentTime.getTime() >= eventStartTime.getTime()
 							&& currentTime.getTime() < eventEndTime.getTime()) {
 						eventBean = new AdEventsBean();
@@ -113,7 +110,7 @@ public class AdsManager {
 				Criteria criteria = session.createCriteria(AssignLogoAds.class);
 				criteria.add(Restrictions.eq("adEventId", eventId));
 				List<AssignLogoAds> assignLogoAdsList = criteria.list();
-				log.info("logo ads size : " + assignLogoAdsList.size());
+				
 				if (assignLogoAdsList.size() > 0) {
 					for (AssignLogoAds logoAds : assignLogoAdsList) {
 						String startTimeString = today + " " + logoAds.getTimeSlotStart();
@@ -125,8 +122,7 @@ public class AdsManager {
 						Date date = new Date();
 						String currentTimeString = sdf.format(date);
 						Date currentTime = sdf.parse(currentTimeString);
-						log.info("StartTime: " + startTime + " # EndTime: " + endTime + " # CurrentTime: "
-								+ currentTime);
+					
 						if (currentTime.getTime() >= startTime.getTime() && currentTime.getTime() < endTime.getTime()) {
 							AssignLogoAdBean logoAdBean = new AssignLogoAdBean();
 							logoAdBean.setAdEventId(eventId);

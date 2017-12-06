@@ -9,7 +9,7 @@
   <property name="hibernate.default_schema">llcdb</property>
   <property name="hibernate.connection.username">root</property>
   <property name="hibernate.dialect">org.hibernate.dialect.MySQLDialect</property>
-  <property name="hibernate.show_sql">true</property>
+  <property name="hibernate.show_sql">false</property>
   <property name="hibernate.format_sql">true</property>
   <!-- <mapping class="com.limitless.services.payment.PaymentService.dao.PaymentTxn"/> -->
   <property name="hibernate.current_session_context_class">org.hibernate.context.internal.ThreadLocalSessionContext</property>
