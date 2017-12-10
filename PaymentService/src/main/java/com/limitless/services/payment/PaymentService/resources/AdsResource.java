@@ -15,6 +15,7 @@ import org.apache.log4j.Logger;
 
 import com.limitless.services.engage.ads.AdEventsBean;
 import com.limitless.services.engage.ads.AssignLogoAdBean;
+import com.limitless.services.engage.ads.VideoAdEventsBean;
 import com.limitless.services.engage.ads.dao.AdsManager;
 
 @Path("/ads")
@@ -51,5 +52,21 @@ public class AdsResource {
 			throw new Exception("Internal Server Error");
 		}
 		return logoAdBean;
+	}
+	
+	@Path("/get/event/videoads/{channelId}")
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	public List<VideoAdEventsBean> getVideoAdsEvents(@PathParam("channelId") int channelId) throws Exception{
+		List<VideoAdEventsBean> eventsBeanList = new ArrayList<VideoAdEventsBean>();
+		try {
+			AdsManager manager = new AdsManager();
+			eventsBeanList = manager.getVideoAdEventsByChannel(channelId);
+		} catch (Exception e) {
+			logger.error("API Error", e);
+			throw new Exception("Internal Server Error");
+		}
+		return eventsBeanList;
 	}
 }

@@ -20,6 +20,7 @@ import org.hibernate.criterion.Restrictions;
 
 import com.limitless.services.engage.ads.AdEventsBean;
 import com.limitless.services.engage.ads.AssignLogoAdBean;
+import com.limitless.services.engage.ads.VideoAdEventsBean;
 import com.limitless.services.payment.PaymentService.util.HibernateUtil;
 import com.limitless.services.payment.PaymentService.util.RestClientUtil;
 import com.sun.jersey.api.client.Client;
@@ -156,5 +157,63 @@ public class AdsManager {
 			}
 		}
 		return logoAdsList;
+	}
+	
+	public List<VideoAdEventsBean> getVideoAdEventsByChannel(int channelId) throws Exception {
+		List<VideoAdEventsBean> eventBeanList = new ArrayList<VideoAdEventsBean>();
+		Session session =  null;
+		Transaction transaction = null;
+		try {
+			session = sessionFactory.getCurrentSession();
+			transaction = session.beginTransaction();
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+			sdf.setTimeZone(getIndianTimeZone());
+			Date date = new Date();
+			String today = sdf.format(date);
+			Criteria criteria = session.createCriteria(VideoAdEvents.class);
+			Junction conditionGrp = Restrictions.conjunction().add(Restrictions.eq("date", today))
+					.add(Restrictions.eq("channelId", channelId)).add(Restrictions.eq("isActive", true));
+			criteria.add(conditionGrp);
+			List<VideoAdEvents> adEventList = criteria.list();
+			log.info("ad event size: " + adEventList.size());
+			if(adEventList.size()>0) {
+				for(VideoAdEvents adEvent: adEventList) {
+					Date now = new Date();
+					Date oneHrLater = new Date();
+					oneHrLater.setTime(now.getTime() + 3600000);
+					String eventStartTimeString = today + " " + adEvent.getStartTime();
+					SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+					sdf2.setTimeZone(getIndianTimeZone());
+					Date eventStartTime = sdf2.parse(eventStartTimeString);
+					Date date2 = new Date();
+					String currentTimeString = sdf2.format(date2);
+					Date currentTime = sdf2.parse(currentTimeString);	
+					if(eventStartTime.getTime() >= now.getTime() && eventStartTime.getTime() < oneHrLater.getTime()) {
+						VideoAdEventsBean adEventsBean = new VideoAdEventsBean();
+						adEventsBean.setId(adEvent.getId());
+						adEventsBean.setChannelId(adEvent.getChannelId());
+						adEventsBean.setEventName(adEvent.getEventName());
+						adEventsBean.setDate(adEvent.getDate());
+						adEventsBean.setStartTime(adEvent.getStartTime());
+						adEventsBean.setNoOfAds(adEvent.getNoOfAds());
+						adEventsBean.setActive(adEvent.isActive());
+						eventBeanList.add(adEventsBean);
+						adEventsBean = null;
+					}
+				}
+			}
+			transaction.commit();
+		} catch (RuntimeException re) {
+			if (transaction != null) {
+				transaction.rollback();
+			}
+			log.error("getting ad failed: " + re);
+			throw re;
+		} finally {
+			if (session != null && session.isOpen()) {
+				session.close();
+			}
+		}
+		return eventBeanList;
 	}
 }
